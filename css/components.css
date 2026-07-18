@@ -318,6 +318,37 @@ body.nav-open {
   width: 28px;
   height: 28px;
   margin: 1.375rem auto 0;
+  opacity: 0;
+}
+
+/* Pressed-seal motion: the card settles first (its own [data-reveal] fade),
+   then the seal stamps in ~0.35s later — a small press-and-settle with a
+   brief shadow bloom, as if being pressed into the paper. Keyed off
+   .is-in-view, added in animations.js's onStart callback at the exact
+   moment the card's GSAP tween actually starts playing (i.e. scrolls into
+   view) — NOT .is-revealed, which every [data-reveal] element gets
+   immediately on page load regardless of scroll position (it's just a
+   re-processing guard). Keying off .is-revealed by mistake was a real bug:
+   the stamp played out fully within ~1.2s of page load, off-screen, so by
+   the time a guest actually scrolled to it the seal just sat there already
+   landed with no visible animation. */
+.invitation-card.is-in-view .invitation-card__seal {
+  animation: seal-stamp 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+}
+
+@keyframes seal-stamp {
+  0% { opacity: 0; transform: scale(0.7) rotate(-12deg); filter: drop-shadow(0 0 0 transparent); }
+  45% { filter: drop-shadow(0 0 8px rgba(156, 82, 48, 0.55)); }
+  55% { opacity: 1; transform: scale(1.1) rotate(4deg); }
+  78% { transform: scale(0.95) rotate(-1.5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0 transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invitation-card__seal {
+    opacity: 1;
+    animation: none;
+  }
 }
 
 /* ---- Timeline (Our Story) --------------------------------------------------- */
@@ -1046,7 +1077,29 @@ body.nav-open {
 .sealed-coda__seal {
   width: 44px;
   height: 44px;
-  opacity: 0.9;
+  opacity: 0;
+}
+
+/* Same pressed-seal motion as the Invitation seal (see that comment for why
+   .is-in-view, not .is-revealed), landing at this seal's own quieter 0.9
+   opacity instead of full strength. */
+.sealed-coda__inner.is-in-view .sealed-coda__seal {
+  animation: seal-stamp-soft 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+}
+
+@keyframes seal-stamp-soft {
+  0% { opacity: 0; transform: scale(0.7) rotate(-12deg); filter: drop-shadow(0 0 0 transparent); }
+  45% { filter: drop-shadow(0 0 8px rgba(156, 82, 48, 0.5)); }
+  55% { opacity: 0.9; transform: scale(1.1) rotate(4deg); }
+  78% { transform: scale(0.95) rotate(-1.5deg); }
+  100% { opacity: 0.9; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0 transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sealed-coda__seal {
+    opacity: 0.9;
+    animation: none;
+  }
 }
 
 .sealed-coda__line {

@@ -43,8 +43,11 @@ const Animations = (() => {
   const revealNew = () => {
     if (typeof gsap === 'undefined') {
       // Graceful fallback: reveal everything immediately if GSAP failed to load.
+      // is-in-view included alongside is-visible/is-revealed so anything
+      // keyed off the real on-screen moment (see the GSAP path below)
+      // still shows its landed state instead of staying stuck invisible.
       Utils.qsa('[data-reveal]:not(.is-revealed)').forEach((el) => {
-        el.classList.add('is-visible', 'is-revealed');
+        el.classList.add('is-visible', 'is-revealed', 'is-in-view');
       });
       return;
     }
@@ -61,6 +64,15 @@ const Animations = (() => {
           y: 0,
           duration: 0.9,
           ease: 'power2.out',
+          // .is-revealed above is added to every element immediately (it's
+          // just a re-processing guard) — it does NOT mean the element has
+          // actually scrolled into view yet. Anything that needs to key off
+          // the real, on-screen reveal moment (e.g. the seal-stamp CSS
+          // animation in components.css) must use .is-in-view instead,
+          // added here in onStart, which only fires when this tween
+          // actually starts playing (i.e. when ScrollTrigger's condition
+          // is met).
+          onStart: () => el.classList.add('is-in-view'),
           scrollTrigger: {
             trigger: el,
             start: 'top 85%',

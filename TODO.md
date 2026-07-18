@@ -272,6 +272,52 @@ the start of every session.
     from RSVP to the sealed coda to the footer. No `?v=N` bump needed (no
     CSS/JS touched, only `index.html` markup). Verified live: no console
     errors.
+  - **"The Pressed Seal" motion implemented (2026-07-18).** Design-lead's
+    motion candidate #4, mocked up and confirmed (motif: wax seal, no idle
+    breathing — shipped off, matching the mockup's default recommendation).
+    Both the Invitation's and the sealed coda's heart-seal SVGs now stamp
+    in ~0.35s after their parent card/block settles — a small
+    press-and-overshoot with a brief `drop-shadow` bloom, via a
+    `seal-stamp`/`seal-stamp-soft` CSS keyframe (the `-soft` variant lands
+    at the coda seal's existing 0.9 opacity instead of full strength).
+    `prefers-reduced-motion` override added for both (shows the landed
+    state instantly, no animation).
+    - **Real bug, caught by the user actually looking for the animation
+      and not seeing it play**: the first implementation keyed both
+      keyframes off `.is-revealed` — but `Animations.revealNew()` adds
+      `.is-revealed` to *every* `[data-reveal]` element immediately/
+      synchronously as a re-processing guard, regardless of scroll
+      position; it does **not** mean the element has actually scrolled
+      into view (the real reveal is a separately-deferred GSAP tween tied
+      to its own ScrollTrigger). So the stamp animation was firing and
+      fully completing within ~1.2s of page load, off-screen, for every
+      section on the page at once — by the time a guest actually scrolled
+      down, the seal was already sitting in its landed state with nothing
+      left to see. Fixed properly: `js/animations.js`'s `revealNew()` now
+      adds a second class, `.is-in-view`, inside the GSAP tween's
+      `onStart` callback — which only fires when the tween actually
+      begins playing, i.e. exactly when ScrollTrigger's condition is met.
+      Both seal keyframes now key off `.is-in-view` instead of
+      `.is-revealed`. The no-GSAP fallback path (`revealNew()`'s
+      `typeof gsap === 'undefined'` branch) also grants `.is-in-view`
+      immediately alongside `.is-visible`/`.is-revealed`, so the seal
+      still shows its landed state rather than staying stuck invisible
+      when GSAP fails to load. Verified live: at scroll position 0 the
+      Invitation card and sealed coda are both genuinely `opacity: 0`
+      (`.is-in-view` false) despite `.is-revealed` already being `true`;
+      scrolling each into view adds `.is-in-view` and the stamp animation
+      plays for real at that moment. `?v=N` bumped 7→8
+      (`animations.js` + `components.css` changed). No console errors.
+  - **Real bug fixed, footer copy (2026-07-18)**: same root cause pattern
+    as the RSVP name-field bug above — the footer's `<span
+    data-guest-name>` was populated from `window.currentGuest.displayName`,
+    which is the literal string `"Guest"` for anyone on the plain shared
+    link (no personalized `?guest=` param). Footer read "Made with love,
+    ♥ for our guest, Guest." — a visibly repeated, awkward "guest." Fixed
+    by dropping the dynamic guest name from the footer entirely per user
+    request; static copy now reads "Made with love, ♥ for our friends and
+    family." `[data-guest-name]` had no other usages in the codebase
+    (confirmed via grep), so nothing else was affected by removing it.
 - **Gallery, Guest Memories, Guestbook, and Wedding Film sections removed
   from the live site for now (2026-07-18), user request.** This is a
   deliberate exception to CLAUDE.md's usual "in-place more-is-coming

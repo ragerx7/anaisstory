@@ -177,6 +177,21 @@ both wait on `MockAPI`'s fake latency) never gets picked up and stays stuck at
 after inserting *any* new `[data-reveal]` content, not just on first load
 (e.g. infinite-scroll pagination, filter changes that add new cards).
 
+⚠️ **A second, easy-to-repeat gotcha found 2026-07-18 building "the pressed
+seal" motion**: `.is-revealed` is added to *every* `[data-reveal]` element
+immediately/synchronously when `revealNew()` runs — it's purely a
+re-processing guard, not a signal that the element has actually scrolled
+into view (the real reveal is a separate GSAP tween deferred by its own
+ScrollTrigger). CSS or JS that needs to key off the element *actually
+becoming visible on screen* (e.g. a child animation that should play when
+its parent card enters the viewport, not at page load) must use
+`.is-in-view` instead — added inside the tween's `onStart` callback, which
+only fires when ScrollTrigger's condition is actually met. Getting this
+wrong is silent and easy to miss: the mis-keyed animation still plays and
+completes correctly, just off-screen within ~1s of page load, so it looks
+totally fine in a DOM/computed-style check and only reveals itself as
+broken when a human actually scrolls down expecting to see it happen.
+
 **Hero load-in sequence (`initHeroSequence()` in `animations.js`)**: as of
 the 2026-07-17 exhibition rebuild, the photo is unveiled first —
 `.hero__photo-frame` settles into place → names (`h1`) fade up → date → CTA.

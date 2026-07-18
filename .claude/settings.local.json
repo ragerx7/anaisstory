@@ -127,7 +127,10 @@
       "Bash(curl -s -o cg-normal-600.ttf \"https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_iE9GnM.ttf\")",
       "Bash(python3 -c \"from PIL import Image; im=Image.open\\('assets/images/wedding-childhood-pic.jpg'\\); print\\(im.size, im.format\\)\")",
       "Bash(sips -g pixelWidth -g pixelHeight assets/images/wedding-childhood-pic.jpg)",
-      "Bash(python3 -c \"import secrets; print\\(secrets.token_urlsafe\\(18\\)\\)\")"
+      "Bash(python3 -c \"import secrets; print\\(secrets.token_urlsafe\\(18\\)\\)\")",
+      "Bash(pkill -f \"http.server 8931\")",
+      "Bash(pkill -f \"http.server 8932\")",
+      "Bash(pkill -f \"http.server 8933\")"
     ]
   }
 }
