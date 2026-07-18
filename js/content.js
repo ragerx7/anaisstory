@@ -24,7 +24,7 @@ const WEDDING_CONTENT = {
   // during development.
   integrations: {
     rsvpEndpoint: 'https://script.google.com/macros/s/AKfycbyMUOsZlPEUyZ-x6_Tphlb7IsKwJiSQw6CX1LLnchkoegBU0mDht1051uICXdZgDyWl7g/exec',
-    rsvpSecret: 'halamadrid7',
+    rsvpSecret: 'SEe48vQzOm2kdo7fKxpEEqhW',
   },
 
   invitation: {

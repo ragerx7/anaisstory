@@ -387,6 +387,34 @@ the start of every session.
   live Apps Script editor and use Deploy → Manage deployments → Edit →
   New version, or this fix doesn't take effect. See SETUP.md's updated
   "Redeploying after editing Code.gs" section.
+- **Root cause found for RSVPs silently not reaching the sheet again
+  (2026-07-18)**: very likely the redeploy instruction directly above.
+  The repo's `Code.gs` had `SHARED_SECRET = 'REPLACE_WITH_YOUR_OWN_SECRET'`
+  — a placeholder, not the user's real secret — while SETUP.md told the
+  user to "copy the current contents of Code.gs... replacing what's
+  there" for the formula-injection fix. Following that literally would
+  silently overwrite the live script's real secret with the placeholder,
+  breaking the match with `content.js`'s secret and causing every
+  submission to fail server-side as `Unauthorized` (`doPost` rejects
+  before ever appending a row) — with no client-visible error, since the
+  UI only surfaces `sheetError` to the console, not to the guest. Not
+  100%-confirmed against the live Apps Script Executions log (that's the
+  one ground-truth source Claude Code can't see — user should check it if
+  this recurs), but the docs/repo inconsistency is real and sufficient
+  explanation on its own.
+  **Fixed as part of the user's own request to rotate the secret
+  anyway**: generated a fresh secret, set it in both `js/content.js`
+  (`rsvpSecret`) and `scripts/google-apps-script/Code.gs`
+  (`SHARED_SECRET`) — so the repo file is finally in sync with what's
+  actually deployable, closing off this whole bug class (copying `Code.gs`
+  wholesale is now safe, since the file *is* the real secret, not a
+  placeholder). SETUP.md's "Redeploying after editing Code.gs" section
+  updated with this history and the exact redeploy steps needed now.
+  **Still needs the user to redeploy** (same mechanism as above) — until
+  they paste the new `Code.gs` into the Apps Script editor and ship
+  Deploy → Manage deployments → Edit → New version, the live endpoint is
+  still checking the *old* secret and submissions will keep failing.
+  `?v=N` bumped 4→5 (`content.js` changed).
 - **Permanent asset-versioning convention adopted, replacing the old
   temporary cache-busting workflow (2026-07-18).** Prompted by the user
   asking whether the caching pain from this session would recur once the

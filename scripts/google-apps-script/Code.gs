@@ -9,7 +9,7 @@
 
 // Must match WEDDING_CONTENT.integrations.rsvpSecret in js/content.js.
 // This is a spam deterrent, not real security — see SETUP.md's security note.
-const SHARED_SECRET = 'REPLACE_WITH_YOUR_OWN_SECRET';
+const SHARED_SECRET = 'SEe48vQzOm2kdo7fKxpEEqhW';
 
 const HEADERS = ['Timestamp', 'Guest ID', 'Name', 'Attending', 'Guest Count', 'Phone', 'Message'];
 

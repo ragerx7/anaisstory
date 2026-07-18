@@ -126,7 +126,8 @@
       "Bash(curl -s -o cg-italic-600.ttf \"https://fonts.gstatic.com/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd5LDfOjw.ttf\")",
       "Bash(curl -s -o cg-normal-600.ttf \"https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_iE9GnM.ttf\")",
       "Bash(python3 -c \"from PIL import Image; im=Image.open\\('assets/images/wedding-childhood-pic.jpg'\\); print\\(im.size, im.format\\)\")",
-      "Bash(sips -g pixelWidth -g pixelHeight assets/images/wedding-childhood-pic.jpg)"
+      "Bash(sips -g pixelWidth -g pixelHeight assets/images/wedding-childhood-pic.jpg)",
+      "Bash(python3 -c \"import secrets; print\\(secrets.token_urlsafe\\(18\\)\\)\")"
     ]
   }
 }

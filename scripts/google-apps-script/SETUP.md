@@ -82,3 +82,26 @@ formula-injection sanitizing described above. Copy the current contents of
 [`Code.gs`](Code.gs) into your Apps Script editor (replacing what's there),
 save, then **Deploy → Manage deployments → Edit → New version → Deploy**.
 The endpoint URL and your secret stay the same — only the code changes.
+
+**Known issue with the instruction above, found 2026-07-18**: at the time
+this was written, `Code.gs`'s `SHARED_SECRET` in this repo was still the
+placeholder `REPLACE_WITH_YOUR_OWN_SECRET`, not your real secret — so
+"copy the current contents... replacing what's there" would have silently
+overwritten your working secret with that placeholder, breaking the match
+with `content.js` and causing every submission to be rejected as
+`Unauthorized` (rows silently stop appearing, no error visible on the
+site). This is now fixed: `Code.gs` in the repo carries the real, current
+secret (kept in sync with `content.js`), so copying it wholesale is safe
+going forward — the file *is* the source of truth for the secret now, not
+a placeholder you have to remember to preserve separately.
+
+**Secret rotated 2026-07-18** (both files updated in this repo already):
+copy the current contents of [`Code.gs`](Code.gs) into your Apps Script
+editor (replacing what's there), save, then **Deploy → Manage deployments
+→ Edit → New version → Deploy**. Until you do this, the live endpoint is
+still checking the *old* secret, so submissions will keep failing as
+`Unauthorized` — same failure mode as above. Afterwards, submit one test
+RSVP and confirm a row appears; if you want to double-check without
+relying on the site's UI (which optimistically shows success either way),
+check **Apps Script editor → Executions** (left sidebar) for the request
+and its actual return value.
