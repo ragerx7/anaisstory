@@ -329,13 +329,19 @@ the start of every session.
 - [ ] **P6 — purposeful motion beyond uniform fades.** One or two moments
       (parallax on a full-bleed photo band, sequential story reveal), not
       motion for its own sake. Lower priority than P4/P5.
-- [ ] **Housekeeping**: `index.html`'s `og:image`/`twitter:image`/JSON-LD
-      `image` still point at the old `assets/images/hero.svg` placeholder,
-      not the real `wedding-childhood-pic.jpg` — a shared link's preview
-      card won't match the site. Quick fix, just not done yet. **Higher
-      priority than it used to be**: the site is now being actively shared
-      with real guests (see CLAUDE.md), so a shared link's stale preview
-      card is a live, guest-facing gap, not just a someday nice-to-have.
+- [x] **Housekeeping — fixed 2026-07-18**: `index.html`'s `og:image`/
+      `twitter:image`/JSON-LD `image`/`og:url`/canonical all used to point
+      at `https://example.com/` and the old `assets/images/hero.svg`
+      placeholder. Prompted by the site going live at
+      `https://ragerx7.github.io/anaisstory/` and being shared over
+      WhatsApp — WhatsApp/Facebook-style link crawlers need an **absolute**
+      image URL (a relative path won't reliably resolve) and generally
+      don't render SVG previews well, so both were real bugs, not just
+      staleness. Now point at the real deployed URL and
+      `wedding-childhood-pic.jpg` (absolute URL), with `og:image:width`
+      (700) / `height` (914) / `type` (image/jpeg) added so crawlers don't
+      have to guess. **Not yet live** — this is a local edit; see the note
+      below on pushing it to `main` for GitHub Pages to pick it up.
 
 ## Blocked on user input — don't assume, ask again if it comes up
 
