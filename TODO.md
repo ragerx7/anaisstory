@@ -193,6 +193,19 @@ the start of every session.
     chat flow, then stale `components.css` making `.field-error` always
     visible). Both were resolved by re-busting every touched file
     together, not just the most recently edited one.
+  - **Real bug fixed (2026-07-18, later same day)**: the Name field's
+    prefill logic (`guestName()` in `js/rsvp.js`) prefilled from
+    `window.currentGuest.displayName` unconditionally — including the
+    generic `default` guest object's `displayName: 'Guest'` when there's
+    no personalized `?guest=` link in the URL. Since the couple is sharing
+    one plain link over WhatsApp, not personalized links, every visitor
+    saw the literal word "Guest" sitting in the Name field and had to
+    delete it before typing their own name. Fixed by only prefilling when
+    `window.currentGuest.guestId !== 'default'` — personalized links
+    (e.g. `?guest=anubhav-family`) still correctly prefill "Anubhav &
+    Family"; the plain link now leaves the field empty with just the
+    "Your name" placeholder. `?v=N` bumped 5→6. Verified live in both
+    cases, no console errors.
 - **"More is coming" notes implemented (2026-07-18).** Three small,
   copy-only additions — no new component, no site-wide banner (see
   CLAUDE.md's "site is live with real guests" note for why a banner was

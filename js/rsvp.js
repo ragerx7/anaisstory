@@ -11,7 +11,15 @@ const RSVP = (() => {
   let attending = null; // 'yes' | 'no' | null
   let guestCount = 1;
 
-  const guestName = () => (window.currentGuest && window.currentGuest.displayName) || '';
+  // Only prefill from a genuinely personalized invite link (?guest=...).
+  // The 'default' fallback guest's displayName ("Guest") is a placeholder
+  // description, not a real name — prefilling it just forces every visitor
+  // on the plain shared link to delete "Guest" before typing their own name.
+  const guestName = () => {
+    const guest = window.currentGuest;
+    if (!guest || guest.guestId === 'default') return '';
+    return guest.displayName || '';
+  };
   const maxGuests = () => (window.currentGuest && window.currentGuest.maxGuests) || 8;
 
   const renderForm = (prefill = {}) => {
