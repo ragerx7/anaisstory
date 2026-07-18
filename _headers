@@ -1,0 +1,9 @@
+# Recognized automatically by Netlify and Cloudflare Pages (ignored, harmless,
+# on any other host). Forces every request to revalidate with the server
+# before using a cached copy, instead of trusting a cached copy indefinitely —
+# the same problem class documented in CLAUDE.md's caching gotcha, fixed at
+# the hosting layer as a second line of defense alongside the ?v=N convention
+# in index.html (which still matters for hosts that don't read this file,
+# e.g. GitHub Pages, and for local dev).
+/*
+  Cache-Control: no-cache

@@ -1,0 +1,38 @@
+/* ==========================================================================
+   animations.css — Keyframes and the [data-reveal] contract used by
+   animations.js (GSAP ScrollTrigger fades elements in on scroll).
+   Kept minimal and restrained by design: no bounce, no rotation, no flash.
+   ========================================================================== */
+
+/* Elements GSAP will animate in start invisible so there's no flash of
+   full-opacity content before ScrollTrigger fires. If JS fails to load,
+   animations.js falls back to adding .is-visible immediately. */
+[data-reveal] {
+  opacity: 0;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+  }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 6px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gallery-item,
+.memory-card,
+.event-card {
+  animation: fade-in var(--duration-slow) var(--ease-editorial);
+}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Naisargi &amp; Anubhav — We're Getting Married</title>
+  <meta name="description" content="Join Naisargi and Anubhav as they celebrate their wedding on February 24, 2027 in Vadodara, Gujarat. RSVP, event schedule, venue details, and more." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://example.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Naisargi &amp; Anubhav — We're Getting Married" />
+  <meta property="og:description" content="Join us as we celebrate our wedding on February 24, 2027 in Vadodara, Gujarat." />
+  <meta property="og:image" content="assets/images/hero.svg" />
+  <meta property="og:url" content="https://example.com/" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Naisargi &amp; Anubhav — We're Getting Married" />
+  <meta name="twitter:description" content="Join us as we celebrate our wedding on February 24, 2027 in Vadodara, Gujarat." />
+  <meta name="twitter:image" content="assets/images/hero.svg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" />
+
+  <!-- Styles (order matters: tokens/base -> components -> responsive -> motion) -->
+  <!-- ?v=N is a deliberate, permanent cache-buster — bump it whenever ANY
+       file below changes. See CLAUDE.md's caching gotcha for why. -->
+  <link rel="stylesheet" href="css/style.css?v=4" />
+  <link rel="stylesheet" href="css/components.css?v=4" />
+  <link rel="stylesheet" href="css/responsive.css?v=4" />
+  <link rel="stylesheet" href="css/animations.css?v=4" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Naisargi & Anubhav's Wedding",
+    "startDate": "2027-02-24T18:00",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": {
+      "@type": "Place",
+      "name": "Main Ceremony Hall",
+      "address": "Vadodara, Gujarat"
+    },
+    "image": ["assets/images/hero.svg"],
+    "description": "The wedding ceremony of Naisargi and Anubhav."
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-logo" href="#home" aria-label="Home">
+        <span data-couple-names></span>
+      </a>
+
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation menu">
+        <span data-lucide="menu" aria-hidden="true"></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" data-open="false" aria-label="Primary">
+        <a href="#story">Our Story</a>
+        <a href="#events">Events</a>
+        <a href="#rsvp">RSVP</a>
+        <!-- Gallery, Memories, Guestbook, Film temporarily removed from nav until those sections are ready; see CLAUDE.md -->
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- ============ 1. HERO ============ -->
+    <section class="hero" id="home" aria-label="Welcome">
+      <div class="hero__content">
+        <p class="visually-hidden">We&rsquo;re getting married!</p>
+        <div class="hero__photo-frame">
+          <img
+            class="hero__feature-photo"
+            src="assets/images/wedding-childhood-pic.jpg"
+            alt="Childhood photos of Anubhav and Naisargi die-cut onto a card, labeled Groom and Bride"
+            loading="eager"
+            width="700"
+            height="914"
+          />
+        </div>
+        <h1><span data-couple-names>Naisargi &amp; Anubhav</span></h1>
+        <div class="hero__date">
+          <span class="hero__date-value">
+            <span class="hero__date-rule" aria-hidden="true"></span>
+            <span data-wedding-date>February 24, 2027</span>
+            <span class="hero__date-rule" aria-hidden="true"></span>
+          </span>
+          <span class="hero__date-city" data-wedding-city>Vadodara, Gujarat</span>
+        </div>
+        <a class="btn btn--festive" href="#rsvp">Celebrate With Us</a>
+      </div>
+      <a class="hero__scroll-indicator" href="#invitation" aria-label="Scroll to invitation">
+        <span data-lucide="chevron-down" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <!-- ============ 2. INVITATION ============ -->
+    <section class="section" id="invitation" aria-labelledby="invitation-heading">
+      <div class="section-inner">
+        <div class="invitation-card" data-reveal>
+          <span class="invitation-card__tape" aria-hidden="true"></span>
+          <h2 id="invitation-heading" class="invitation-card__title">You&rsquo;re Invited</h2>
+          <p class="invitation-card__line">come celebrate the start of our forever</p>
+          <svg class="invitation-card__seal" viewBox="0 0 34 34" aria-hidden="true">
+            <path d="M17,29 C8,22.5 3.5,17 3.5,11.5 C3.5,6.5 7.5,3.5 11.5,3.5 C13.8,3.5 15.8,4.7 17,6.7 C18.2,4.7 20.2,3.5 22.5,3.5 C26.5,3.5 30.5,6.5 30.5,11.5 C30.5,17 26,22.5 17,29 Z" fill="var(--color-accent)" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. OUR STORY ============ -->
+    <section class="section section--alt" id="story" aria-labelledby="story-heading">
+      <div class="section-inner">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Our Journey</span>
+          <h2 id="story-heading">Our Story</h2>
+        </div>
+        <div class="timeline" id="story-timeline" role="list"></div>
+      </div>
+    </section>
+
+    <!-- ============ 4. EVENTS ============ -->
+    <section class="section" id="events" aria-labelledby="events-heading">
+      <div class="section-inner">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Schedule</span>
+          <h2 id="events-heading">Events</h2>
+          <p>Everything you need to join us for each celebration.</p>
+        </div>
+        <div class="events-grid" id="events-grid"></div>
+      </div>
+    </section>
+
+    <!-- ============ 5. RSVP ============ -->
+    <section class="section" id="rsvp" aria-labelledby="rsvp-heading">
+      <div class="section-inner section-inner--narrow">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Save us the honour</span>
+          <h2 id="rsvp-heading">RSVP</h2>
+          <p>A few quick details — under a minute, we promise.</p>
+          <span class="rsvp-hairline" aria-hidden="true"></span>
+        </div>
+        <div class="rsvp-flow" id="rsvp-flow" aria-live="polite"></div>
+        <noscript>
+          <p>Please enable JavaScript to use the RSVP form, or email us directly to confirm your attendance.</p>
+        </noscript>
+      </div>
+    </section>
+
+    <!--
+    ============ 6. GALLERY (temporarily removed 2026-07-18, will return) ============
+    Nav link also removed above. See CLAUDE.md "What this is" for why sections
+    are hidden instead of shown with placeholder framing during this removal.
+    <section class="section" id="gallery" aria-labelledby="gallery-heading">
+      <div class="section-inner">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Memories</span>
+          <h2 id="gallery-heading">Gallery</h2>
+        </div>
+        <div id="gallery-content"></div>
+      </div>
+    </section>
+    -->
+
+    <!--
+    ============ 7. GUEST MEMORIES (temporarily removed 2026-07-18, will return) ============
+    <section class="section section--alt" id="memories" aria-labelledby="memories-heading">
+      <div class="section-inner">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Shared By You</span>
+          <h2 id="memories-heading">Guest Memories</h2>
+          <p>Share your favorite moments from the celebrations.</p>
+        </div>
+
+        <form class="memory-upload-form" id="memory-upload-form" data-reveal>
+          <div class="memory-upload-form__row">
+            <label for="memory-photo">Photo</label>
+            <input type="file" id="memory-photo" name="photo" accept="image/*" required />
+          </div>
+          <div class="memory-upload-form__row">
+            <label for="memory-caption">Caption</label>
+            <textarea id="memory-caption" name="caption" rows="2" placeholder="Say something about this moment"></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary">Share Memory</button>
+          <p class="form-status" role="status"></p>
+        </form>
+
+        <div class="memories-feed" id="memories-feed"></div>
+      </div>
+    </section>
+    -->
+
+    <!--
+    ============ 8. WEDDING FILM (temporarily removed 2026-07-18, will return) ============
+    <section class="section" id="film" aria-labelledby="film-heading">
+      <div class="section-inner section-inner--narrow">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Watch</span>
+          <h2 id="film-heading">Our Wedding Film</h2>
+        </div>
+        <div class="film-player" id="film-player"></div>
+      </div>
+    </section>
+    -->
+
+    <!--
+    ============ 9. GUESTBOOK (temporarily removed 2026-07-18, will return) ============
+    <section class="section section--alt" id="guestbook" aria-labelledby="guestbook-heading">
+      <div class="section-inner">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Words Of Love</span>
+          <h2 id="guestbook-heading">Guestbook</h2>
+        </div>
+        <p class="quiet-note guestbook-intro-note">Our families left the first note. Add yours below &mdash; the wall fills as more of you arrive.</p>
+
+        <form class="guestbook-form" id="guestbook-form" data-reveal>
+          <div class="guestbook-form__row">
+            <label class="visually-hidden" for="guestbook-name">Your name</label>
+            <input type="text" id="guestbook-name" placeholder="Your name" required />
+          </div>
+          <div class="guestbook-form__row">
+            <label class="visually-hidden" for="guestbook-message">Your message</label>
+            <textarea id="guestbook-message" rows="3" placeholder="Leave a message for the couple" required></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary">Sign the Guestbook</button>
+          <p class="form-status" role="status"></p>
+        </form>
+
+        <div class="guestbook-list" id="guestbook-list"></div>
+      </div>
+    </section>
+    -->
+
+    <!--
+    ============ FAQ (temporarily removed 2026-07-18, will return) ============
+    <section class="section" id="faq" aria-labelledby="faq-heading">
+      <div class="section-inner section-inner--narrow">
+        <div class="section-heading" data-reveal>
+          <span class="eyebrow">Good To Know</span>
+          <h2 id="faq-heading">Frequently Asked Questions</h2>
+        </div>
+        <div class="faq-list" id="faq-list"></div>
+      </div>
+    </section>
+    -->
+
+    <!-- ============ SEALED CODA (mystery motif for the hidden sections) ============ -->
+    <section class="sealed-coda" id="coda" aria-labelledby="coda-heading">
+      <div class="sealed-coda__inner" data-reveal>
+        <svg class="sealed-coda__seal" viewBox="0 0 34 34" aria-hidden="true">
+          <path d="M17,29 C8,22.5 3.5,17 3.5,11.5 C3.5,6.5 7.5,3.5 11.5,3.5 C13.8,3.5 15.8,4.7 17,6.7 C18.2,4.7 20.2,3.5 22.5,3.5 C26.5,3.5 30.5,6.5 30.5,11.5 C30.5,17 26,22.5 17,29 Z" fill="var(--color-accent)" />
+        </svg>
+        <h2 id="coda-heading" class="sealed-coda__line">There&rsquo;s more to this book than you can open today.</h2>
+        <p class="sealed-coda__caption">The seals loosen in their own time.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ 10. FOOTER ============ -->
+  <footer class="site-footer">
+    <p><span data-couple-names></span></p>
+    <p class="site-footer__note">Made with love, <span data-lucide="heart" aria-hidden="true"></span> for our guest, <span data-guest-name>you</span>.</p>
+  </footer>
+
+  <!-- Vendor libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js" defer></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+
+  <!-- App modules (order matters: data/utils first, orchestrator last) -->
+  <script src="js/content.js?v=4" defer></script>
+  <script src="js/utils.js?v=4" defer></script>
+  <script src="js/navigation.js?v=4" defer></script>
+  <script src="js/animations.js?v=4" defer></script>
+  <script src="js/rsvp.js?v=4" defer></script>
+  <script src="js/gallery.js?v=4" defer></script>
+  <script src="js/app.js?v=4" defer></script>
+</body>
+</html>

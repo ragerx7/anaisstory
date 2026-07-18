@@ -1,0 +1,145 @@
+/* ==========================================================================
+   responsive.css — Mobile-first breakpoint overrides.
+   Base rules in style.css/components.css target phones; tablet (>=768px)
+   and desktop (>=1024px) rules here progressively enhance the layout.
+   ========================================================================== */
+
+/* ---- Tablet (>= 768px) --------------------------------------------------- */
+@media (min-width: 768px) {
+  .nav-toggle {
+    display: none;
+  }
+
+  .site-nav {
+    position: static;
+    flex-direction: row;
+    gap: var(--space-lg);
+    background: transparent;
+    transform: none;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero__feature-photo {
+    width: 340px;
+  }
+
+  .gallery-grid {
+    columns: 2;
+  }
+
+  .timeline-item {
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+  }
+
+  .timeline-item__photo {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .memories-feed {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .memory-card img {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+/* ---- Desktop (>= 1024px) --------------------------------------------------- */
+@media (min-width: 1024px) {
+  .hero__feature-photo {
+    width: clamp(400px, 34vw, 500px);
+  }
+
+  /* Extra vertical air so the card reads as one object floating on a mostly
+     empty page, per the exhibition rule's negative-space floor. */
+  #invitation.section {
+    padding-block: clamp(120px, 16vh, 200px);
+  }
+
+  .invitation-card {
+    padding: 4.75rem 3rem 3.5rem;
+  }
+
+  .events-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .gallery-grid {
+    columns: 3;
+  }
+
+  .memories-feed {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Alternating left/right timeline with a connecting spine */
+  .timeline {
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--color-border);
+    transform: translateX(-50%);
+  }
+
+  .timeline-item {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: start;
+    position: relative;
+  }
+
+  .timeline-item:nth-child(even) .timeline-item__copy {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: right;
+  }
+
+  .timeline-item:nth-child(even) .timeline-item__photo {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .timeline-item:nth-child(odd) .timeline-item__photo {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .timeline-item:nth-child(odd) .timeline-item__copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .timeline-item__marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .rsvp-flow {
+    padding: var(--space-2xl);
+  }
+}
+
+/* ---- Large desktop (>= 1440px) --------------------------------------------- */
+@media (min-width: 1440px) {
+  :root {
+    --section-padding-inline: var(--space-xl);
+  }
+}
