@@ -101,6 +101,38 @@ const Animations = (() => {
   };
 
   /**
+   * Subtle parallax on Our Story photos: each photo pans a few percent as
+   * its milestone scrolls through the viewport, scrubbed to scroll
+   * position (not a one-time reveal). Photos are pre-scaled up slightly
+   * so the pan has headroom to move within without exposing the parent's
+   * background at the top/bottom edge (the parent already clips overflow
+   * for the gradient-wash ::after in components.css).
+   */
+  const initStoryParallax = () => {
+    if (typeof gsap === 'undefined' || prefersReducedMotion) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    Utils.qsa('.timeline-item__photo img').forEach((img) => {
+      gsap.set(img, { scale: 1.15 });
+      gsap.fromTo(
+        img,
+        { yPercent: -6 },
+        {
+          yPercent: 6,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: img.closest('.timeline-item'),
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        }
+      );
+    });
+  };
+
+  /**
    * One-time hero load-in choreography: the feature photo (the one
    * dominant visual) settles into place first, then the names/date
    * placard fades up, then the CTA. Runs unconditionally on load rather
@@ -118,12 +150,15 @@ const Animations = (() => {
     if (!content) return;
 
     const photo = Utils.qs('.hero__photo-frame', content);
+    const eyebrow = Utils.qs('.hero__eyebrow', content);
     const names = Utils.qs('h1', content);
     const date = Utils.qs('.hero__date', content);
+    const countdown = Utils.qs('.hero__countdown', content);
     const cta = Utils.qs('.btn', content);
+    const ctaCaption = Utils.qs('.hero__cta-caption', content);
 
     const revealInstantly = () => {
-      [photo, names, date, cta].forEach((el) => {
+      [photo, eyebrow, names, date, countdown, cta, ctaCaption].forEach((el) => {
         if (!el) return;
         el.style.opacity = '1';
         el.style.transform = 'none';
@@ -139,14 +174,18 @@ const Animations = (() => {
     const tl = gsap.timeline();
 
     if (photo) tl.to(photo, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'power2.out' });
-    if (names) tl.to(names, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.25');
+    if (eyebrow) tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.25');
+    if (names) tl.to(names, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.2');
     if (date) tl.to(date, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2');
+    if (countdown) tl.to(countdown, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.15');
     if (cta) tl.to(cta, { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.15');
+    if (ctaCaption) tl.to(ctaCaption, { opacity: 1, duration: 0.35, ease: 'power2.out' }, '-=0.1');
   };
 
   const init = () => {
     initSmoothScroll();
     initHeroSequence();
+    initStoryParallax();
     revealNew();
   };
 

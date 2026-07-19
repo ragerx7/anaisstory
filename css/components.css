@@ -14,11 +14,11 @@
   padding: var(--space-sm) var(--space-lg);
   background-color: var(--color-button);
   color: #fff;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   font-size: var(--fs-small);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
   transition: background-color var(--duration-fast) var(--ease-editorial), transform var(--duration-fast) var(--ease-editorial);
 }
 
@@ -41,13 +41,14 @@
 }
 
 .btn--festive {
-  background-color: var(--color-accent-deep);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-deep));
   color: var(--color-on-accent-deep);
+  box-shadow: 0 8px 24px rgba(139, 58, 82, 0.35);
 }
 
 .btn--festive:hover,
 .btn--festive:focus-visible {
-  background-color: var(--color-accent-deep-hover);
+  background: linear-gradient(135deg, var(--color-accent-deep-hover), var(--color-accent-deep));
 }
 
 .btn--small {
@@ -88,12 +89,14 @@
 
 .site-header--scrolled {
   padding-block: var(--space-xs);
-  background-color: var(--color-bg);
+  background-color: rgba(255, 248, 244, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--shadow-soft);
 }
 
 .site-header__inner {
-  max-width: var(--content-max-width);
+  max-width: 1152px;
   margin-inline: auto;
   padding-inline: var(--section-padding-inline);
   display: flex;
@@ -102,9 +105,9 @@
 }
 
 .site-logo {
-  font-family: var(--font-heading);
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-family: var(--font-script);
+  font-size: 1.75rem;
+  color: var(--color-accent);
 }
 
 .nav-toggle {
@@ -143,11 +146,20 @@
   color: var(--color-accent);
 }
 
+.site-nav__cta {
+  transition: background-color var(--duration-fast) var(--ease-editorial), color var(--duration-fast) var(--ease-editorial);
+}
+
 body.nav-open {
   overflow: hidden;
 }
 
 /* ---- Hero ----------------------------------------------------------------- */
+/* Warm atmospheric glow behind the feature photo — gives the hero a sense
+   of place instead of content floating on flat, even paper. Gradient
+   matches the Figma reference's linear-gradient(170deg, bg 0%, blush at
+   ~33% opacity 50%, bg 100%) — the blush is a translucent wash, not a
+   solid color stop. */
 .hero {
   position: relative;
   min-height: 100svh;
@@ -156,17 +168,50 @@ body.nav-open {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: calc(var(--space-3xl) + var(--space-md)) var(--section-padding-inline) var(--space-2xl);
+  padding: 6rem var(--section-padding-inline) 4rem;
+  background: linear-gradient(170deg, var(--color-bg) 0%, rgba(242, 196, 206, 0.33) 50%, var(--color-bg) 100%);
 }
 
-/* Warm atmospheric glow behind the feature photo — gives the hero a sense
-   of place instead of content floating on flat, even paper. */
 .hero::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 55% 42% at 50% 40%, rgba(157, 82, 48, 0.16), transparent 70%);
+  top: -10%;
+  left: -8%;
+  width: 55vw;
+  height: 55vw;
+  max-width: 500px;
+  max-height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 196, 206, 0.5), transparent 70%);
+  filter: blur(50px);
   pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -10%;
+  width: 45vw;
+  height: 45vw;
+  max-width: 420px;
+  max-height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 196, 160, 0.4), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-mauve);
+  margin-bottom: var(--space-sm);
+  opacity: 0;
+  transform: translateY(8px);
 }
 
 .hero__content {
@@ -186,25 +231,39 @@ body.nav-open {
    is sized as the photo's caption, not a second focal element — the photo
    is unveiled first and carries the visual weight. */
 .hero__content h1 {
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-family: var(--font-script);
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: normal;
+  color: var(--color-accent);
   margin-block: 0 var(--space-md);
   opacity: 0;
   transform: translateY(10px);
 }
 
-/* Wrapper carries the fade/settle animation for the photo. */
+/* Wrapper carries the fade/settle animation for the photo, then a gentle
+   continuous float once the load-in settle finishes (~2s in). CSS
+   animations always win over the inline transform GSAP leaves behind
+   once its tween completes, so no conflict between the two. */
 .hero__photo-frame {
   position: relative;
   margin-bottom: var(--space-lg);
   opacity: 0;
   transform: translateY(-16px) scale(0.97);
+  animation: heroFloat 6s ease-in-out 2s infinite;
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .hero__feature-photo {
   width: clamp(240px, 66vw, 340px);
   height: auto;
   display: block;
-  filter: drop-shadow(0 18px 28px rgba(61, 42, 26, 0.35));
+  filter: drop-shadow(0 18px 28px rgba(59, 42, 36, 0.35));
 }
 
 .hero__date {
@@ -222,7 +281,7 @@ body.nav-open {
   align-items: center;
   gap: var(--space-sm);
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: 400;
   font-size: clamp(1.35rem, 3vw, 1.75rem);
   color: var(--color-text);
 }
@@ -238,10 +297,63 @@ body.nav-open {
   font-size: var(--fs-small);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
+}
+
+.hero__countdown {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+  background-color: rgba(255, 248, 244, 0.8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3xs);
+  min-width: 2.5ch;
+}
+
+.countdown-unit__value {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.countdown-unit__label {
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.countdown-sep {
+  color: var(--color-mauve);
+  font-size: 1.25rem;
+  line-height: 2.5rem;
+  opacity: 0.6;
 }
 
 .hero__content .btn {
+  opacity: 0;
+}
+
+.hero__cta-caption {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin-top: var(--space-sm);
   opacity: 0;
 }
 
@@ -263,7 +375,7 @@ body.nav-open {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-soft);
-  padding: 4rem 1.875rem 2.75rem;
+  padding: 4rem 2.5rem;
   text-align: center;
   transform: rotate(-0.8deg);
 }
@@ -286,14 +398,24 @@ body.nav-open {
   transform: translateX(-50%) rotate(-2deg);
   width: 70px;
   height: 26px;
-  background-color: rgba(232, 218, 187, 0.7);
+  background-color: rgba(242, 196, 206, 0.75);
   border: 1px solid rgba(160, 130, 80, 0.25);
-  box-shadow: 0 1px 2px rgba(61, 42, 26, 0.1);
+  box-shadow: 0 1px 2px rgba(59, 42, 36, 0.1);
+}
+
+.invitation-card__eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-mauve);
+  margin: 0 0 var(--space-sm);
 }
 
 .invitation-card__title {
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: 400;
   font-style: normal;
   font-size: clamp(1.9rem, 4.5vw, 2.6rem);
   line-height: 1.12;
@@ -338,7 +460,7 @@ body.nav-open {
 
 @keyframes seal-stamp {
   0% { opacity: 0; transform: scale(0.7) rotate(-12deg); filter: drop-shadow(0 0 0 transparent); }
-  45% { filter: drop-shadow(0 0 8px rgba(156, 82, 48, 0.55)); }
+  45% { filter: drop-shadow(0 0 8px rgba(139, 58, 82, 0.55)); }
   55% { opacity: 1; transform: scale(1.1) rotate(4deg); }
   78% { transform: scale(0.95) rotate(-1.5deg); }
   100% { opacity: 1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0 transparent); }
@@ -355,7 +477,7 @@ body.nav-open {
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
+  gap: 5rem;
 }
 
 .timeline-item {
@@ -363,41 +485,95 @@ body.nav-open {
   gap: var(--space-md);
 }
 
-.timeline-item__marker {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+.timeline-item__photo {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
 }
 
-.timeline-item__year {
-  font-family: var(--font-heading);
-  font-size: var(--fs-h3);
-  color: var(--color-accent);
+.timeline-item__photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(92, 48, 64, 0.25), transparent 50%);
+  pointer-events: none;
 }
 
 .timeline-item__photo img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: var(--radius-md);
+  display: block;
+}
+
+.timeline-item__year {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-mauve);
+}
+
+.timeline-item__label {
+  font-family: var(--font-body);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin: var(--space-2xs) 0;
 }
 
 .timeline-item__copy h3 {
   margin-bottom: var(--space-2xs);
 }
 
+.timeline-item__copy p:not(.timeline-item__label) {
+  font-weight: 300;
+  font-size: 0.975rem;
+  line-height: 1.75;
+}
+
 /* ---- Events grid / cards ------------------------------------------------------ */
 .events-grid {
   display: grid;
-  gap: var(--space-lg);
+  gap: 1.25rem;
 }
 
 .event-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   background-color: var(--color-bg-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  overflow: hidden;
   transition: transform var(--duration-base) var(--ease-editorial), box-shadow var(--duration-base) var(--ease-editorial);
+}
+
+/* Padding lives here, not on .event-card itself, so the top accent bar
+   below can sit flush with the card's true outer edge (an absolutely
+   positioned child is placed relative to its ancestor's padding box, so
+   padding on .event-card would have inset the bar). */
+.event-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex: 1;
+  padding: 1.75rem;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--color-accent), var(--color-gold));
 }
 
 .event-card:hover {
@@ -405,8 +581,28 @@ body.nav-open {
   box-shadow: var(--shadow-soft);
 }
 
+.event-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
 .event-card__header h3 {
   margin-bottom: var(--space-3xs);
+}
+
+.event-card__badge {
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-mauve);
+  background-color: rgba(242, 196, 206, 0.35);
+  border: 1px solid var(--color-blush);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
 }
 
 .event-card__datetime {
@@ -415,15 +611,7 @@ body.nav-open {
   font-weight: 600;
 }
 
-.event-card__description {
-  margin-block: var(--space-sm);
-}
-
 .event-card__details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
   padding-block: var(--space-sm);
   border-block: 1px solid var(--color-border);
 }
@@ -432,7 +620,7 @@ body.nav-open {
   font-size: var(--fs-eyebrow);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin-bottom: var(--space-3xs);
 }
 
@@ -440,24 +628,36 @@ body.nav-open {
   font-weight: 500;
 }
 
-/* ---- RSVP static form -------------------------------------------------------------- */
-.rsvp-hairline {
-  display: inline-block;
-  width: 44px;
-  height: 1px;
-  background-color: var(--color-gold);
-  opacity: 0.5;
-  margin-top: var(--space-sm);
+/* A bare "TBD" was rendering three different ways in the same card (mauve
+   uppercase pill, bold rose datetime, bold brown venue value) — reads as
+   inconsistent rather than as one honest "not yet decided" signal. Unify
+   every TBD placeholder to the same quiet, muted-italic treatment; real
+   values (once dates/venues are confirmed) keep their original distinct
+   styling since this class is only applied while the value is literally 'TBD'. */
+.event-card__badge.is-tbd,
+.event-card__datetime.is-tbd,
+.event-card__details dd.is-tbd {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-weight: 400;
 }
+
+.event-card__quote {
+  font-family: var(--font-heading);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  margin-top: auto;
+}
+
+/* ---- RSVP static form -------------------------------------------------------------- */
 
 .rsvp-card {
   position: relative;
-  max-width: 560px;
-  margin-inline: auto;
   background-color: var(--color-bg-raised);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
   box-shadow: var(--shadow-soft);
-  padding: clamp(28px, 6vw, 44px);
+  padding: clamp(28px, 6vw, 48px);
   text-align: left;
 }
 
@@ -472,15 +672,16 @@ body.nav-open {
 .field-label {
   display: block;
   font-family: var(--font-body);
-  font-size: var(--fs-small);
+  font-size: 0.8rem;
   font-weight: 500;
+  letter-spacing: 0.04em;
   color: var(--color-text);
   margin-bottom: var(--space-2xs);
 }
 
 .field-optional {
   font-style: italic;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   font-weight: 400;
   font-size: 0.8rem;
 }
@@ -495,7 +696,7 @@ body.nav-open {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-sm);
-  box-shadow: inset 0 1px 2px rgba(61, 42, 26, 0.05);
+  box-shadow: inset 0 1px 2px rgba(59, 42, 36, 0.05);
   transition: border-color var(--duration-fast) var(--ease-editorial), box-shadow var(--duration-fast) var(--ease-editorial);
 }
 
@@ -513,7 +714,7 @@ body.nav-open {
 .field-textarea:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(156, 82, 48, 0.18);
+  box-shadow: 0 0 0 3px rgba(139, 58, 82, 0.18);
 }
 
 .field-textarea {
@@ -527,14 +728,14 @@ body.nav-open {
 }
 
 .field-group.has-error .field-input {
-  box-shadow: 0 0 0 3px rgba(110, 42, 47, 0.14);
+  box-shadow: 0 0 0 3px rgba(92, 48, 64, 0.14);
 }
 
 .field-error {
   display: none;
   margin-top: var(--space-2xs);
   font-size: var(--fs-small);
-  color: var(--color-accent-deep);
+  color: var(--color-accent);
 }
 
 .field-group.has-error .field-error {
@@ -663,16 +864,17 @@ body.nav-open {
 
 .rsvp-success h3 {
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .rsvp-success p {
   font-family: var(--font-body);
+  font-weight: 300;
   color: var(--color-text-secondary);
   margin-top: var(--space-sm);
   max-width: 30rem;
   margin-inline: auto;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .rsvp-change-link {
@@ -680,7 +882,7 @@ body.nav-open {
   margin-top: var(--space-md);
   font-family: var(--font-body);
   font-size: var(--fs-small);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   text-decoration: underline;
   cursor: pointer;
   background: none;
@@ -1089,7 +1291,7 @@ body.nav-open {
 
 @keyframes seal-stamp-soft {
   0% { opacity: 0; transform: scale(0.7) rotate(-12deg); filter: drop-shadow(0 0 0 transparent); }
-  45% { filter: drop-shadow(0 0 8px rgba(156, 82, 48, 0.5)); }
+  45% { filter: drop-shadow(0 0 8px rgba(139, 58, 82, 0.5)); }
   55% { opacity: 0.9; transform: scale(1.1) rotate(4deg); }
   78% { transform: scale(0.95) rotate(-1.5deg); }
   100% { opacity: 0.9; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0 transparent); }
@@ -1104,7 +1306,7 @@ body.nav-open {
 
 .sealed-coda__line {
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: 400;
   font-style: normal;
   font-size: clamp(1.5rem, 3vw, 2rem);
   color: var(--color-text);
@@ -1115,7 +1317,7 @@ body.nav-open {
 .sealed-coda__caption {
   font-family: var(--font-heading);
   font-style: italic;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 1rem;
   color: var(--color-text-secondary);
   margin: 0;
@@ -1125,14 +1327,21 @@ body.nav-open {
 /* ---- Footer ------------------------------------------------------------------------------ */
 .site-footer {
   text-align: center;
-  padding-block: var(--space-2xl);
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
+  padding-block: 4rem;
   color: var(--color-text-secondary);
+  background-color: var(--color-bg-raised);
+  border-top: 1px solid var(--color-border);
+}
+
+.site-footer__names {
+  font-family: var(--font-script);
+  font-size: 2rem;
+  color: var(--color-accent);
 }
 
 .site-footer__note {
   font-family: var(--font-body);
   font-size: var(--fs-small);
+  color: var(--color-text-muted);
   margin-top: var(--space-2xs);
 }

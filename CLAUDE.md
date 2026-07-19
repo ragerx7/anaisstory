@@ -269,51 +269,155 @@ produced a real-looking bug, `.field-error` elements stuck visible with no
 to *every* asset tag together, every time, not just the one file that
 changed.
 
-## Design system — current direction: "scrapbook"
+⚠️ **The Browser preview pane's screenshot tool has a recurring
+compositing glitch, seen across multiple sessions (first flagged
+2026-07-18, most recently reproduced/confirmed 2026-07-19)**: a
+`computer {action: "screenshot"}` call can render a "ghost" element —
+text or an element from a *different* scroll position or an earlier
+page state — composited into the current screenshot at the wrong spot,
+even though it doesn't exist anywhere near the viewport in the real DOM
+at that scroll position. Confirmed 2026-07-19 by cross-checking a
+screenshot that showed a stray "RSVP" heading pinned under the sticky
+header at every scroll position (including the very top of the page)
+against `getBoundingClientRect()` on every element in the DOM at that
+exact scroll position — nothing was actually there. **The fix is the
+same one already established for CSS/JS verification: don't trust the
+screenshot alone for anything you can check programmatically.** Use
+`getComputedStyle()`/`getBoundingClientRect()` to confirm real layout
+state, and treat a screenshot as corroborating evidence, not the
+primary source of truth, especially for "is this element visible/
+positioned correctly" questions. If a user reports something that looks
+like this glitch from their own screenshot, it's worth a quick DOM check
+before assuming it's a real site bug — but don't assume it's *always*
+the glitch either; confirm each time.
 
-The site pivoted **away** from the original brief's "premium editorial,
-Apple/Airbnb/Aesop" direction to a warmer **paper/scrapbook aesthetic** after
-the user reviewed several Pinterest/Instagram references. This was a
-deliberate, explicit user decision — don't revert toward the original
-minimal-editorial look without being asked.
+## Design system — current direction: "Petal Blush" (romantic rose/gold)
+
+**Superseded the "scrapbook" rust-paper palette on 2026-07-19.** The user
+commissioned a full Figma Make replica of the site in a new romantic
+rose/blush/gold direction (source: the folder shared as "Wedding Website
+Color Palette-2" — kept locally by the user, not checked into this repo)
+and asked for the real site to be brought in line with it, with two
+explicit, non-negotiable corrections vs. that reference: (1) the RSVP
+form's fields stay exactly as they already were on the real site (Name /
+Will you attend yes-no / guest-count stepper / optional phone / optional
+message) — no email field, no "Joyfully accepts / Regretfully declines"
+relabeling; (2) Events stays the real 4-event list (Mehendi, Sangeet &
+Cocktails, Haldi, Wedding) with every date/venue/dress-code field honestly
+`TBD`, not the reference's fabricated 4-event list (with a "Reception"
+instead of Haldi) and invented specific dates/venues/dress codes. Both of
+those were deliberately NOT ported. This is not a reversion of the
+"scrapbook" pivot's own reasoning (paper/warmth over premium-editorial
+minimalism) — it's a second, later palette pivot on top of that decision,
+this time toward romance/rose rather than paper/rust. Don't revert to
+rust-paper without being asked, same as scrapbook itself was never reverted
+to premium-editorial.
 
 Current palette/tokens (in `css/style.css` `:root`):
-- `--color-bg: #ede3d0` (paper), `--color-bg-raised: #faf6ec` (card — brightened
-  from the original `#f7f1e4` so raised surfaces read as objects on the paper
-  rather than nearly-identical values that dissolve into the background)
-- `--color-text: #3d2a1a` (ink), `--color-text-secondary: #6b5138`
-- `--color-accent: #9c5230` (rust) — the base warm accent, used everywhere
-- `--color-accent-deep: #6e2a2f` / `--color-accent-deep-hover: #85373d` /
-  `--color-on-accent-deep: #fdf6ea` — a **festive peak role**, added after a
-  design-lead review flagged the palette as too monochromatic-warm with no
-  emotional "peak." Used sparingly: the hero's primary CTA (`.btn--festive`)
-  and, going forward, 1-2 full-bleed/deep-background moments elsewhere. This
-  is **not** the abandoned dark-maroon full-site pivot (see Rejected
-  directions) — it's an accent role on top of the paper base, not a reskin.
-- `--color-gold: #b98729` — a **micro-accent only** (hairline rules, small
-  dividers, e.g. the hero date's flanking lines). Never used as a fill.
-- `--paper-grain`: a tiled SVG turbulence texture (`assets/images/paper-grain.svg`),
-  applied to `body` and `.section--alt` backgrounds
-- `--shadow-soft`: bumped to a genuinely visible (but still soft) two-layer
-  shadow — the original was so subtle that raised cards barely separated
-  from the page.
-- Headings: Cormorant Garamond, weight 600 globally (bumped from 500 — a
-  design-lead review found the type system was under-using scale/weight
-  contrast, the single biggest lever for editorial emotion). `--fs-h2` was
-  also bumped to `clamp(2.25rem, 5vw, 3.25rem)` (from `clamp(1.75rem, 3.5vw,
-  2.5rem)`) so section headings read as display-scale moments, not mid-sized
-  labels.
-- `.eyebrow`: italic Cormorant Garamond, not uppercase-tracked Inter. The old
-  tracked-caps kicker was flagged as the coldest, most template-like element
-  on the site (it repeated identically on all ~9 non-hero sections) — the
-  italic-serif treatment reads as a warm handwritten lead-in instead.
+- `--color-bg: #fdf6f0` (ivory), `--color-bg-raised: #fff8f4` (card)
+- `--color-text: #3b2a24` (deep warm brown ink), `--color-text-secondary: #6b4c44`
+- `--color-accent: #8b3a52` ("Bridal Rose") — the base accent, used everywhere
+  headings/links/icons need color
+- `--color-accent-deep: #5c3040` / `--color-accent-deep-hover: #6d3a4d` /
+  `--color-on-accent-deep: #fff8f4` — the **festive peak role**, same
+  purpose as before (kept through both palette pivots): the hero's primary
+  CTA (`.btn--festive`), RSVP's submit button, and full-bleed/deep-background
+  moments. Value changed from the old maroon `#6e2a2f` to the new plum
+  `#5c3040` to match Petal Blush's rose family.
+- `--color-gold: #c9935a` ("Champagne Gold") — still a **micro-accent only**
+  (hairline rules, the Events card top accent bar's gradient partner). Never
+  used as a fill.
+- **New tokens this palette added, no equivalent existed before**:
+  `--color-blush: #f2c4ce` (decorative washes — hero's radial glow blobs,
+  the Invitation card's washi tape), `--color-mauve: #c4879a` (the hero
+  eyebrow, countdown separators, ghost-year ink-only stroke color — a
+  distinct secondary-accent role from `--color-text-secondary`),
+  `--color-peach: #f5c4a0` (hero's second decorative blob only).
+- `--paper-grain: none`. The grain texture asset (`assets/images/
+  paper-grain.svg`) is **kept on disk but no longer applied** — Petal Blush
+  is a clean flat/gradient look with no paper texture, matching the Figma
+  reference exactly. Every consumer of `--paper-grain` (`body`,
+  `.section--alt`) still works unchanged: the token just resolves to an
+  inert `none` background-image layer now, so no call sites needed editing.
+- `--shadow-soft`: unchanged in structure, still a visible two-layer shadow;
+  only the tinted colors inside individual shadow/glow declarations across
+  `components.css` were re-tinted from the old rust rgba values to the new
+  rose/plum ones (e.g. `rgba(156,82,48,...)` → `rgba(139,58,82,...)`).
+- **Typography, changed fonts entirely**: `--font-heading` is now Playfair
+  Display (was Cormorant Garamond), `--font-body` is now Jost (was Inter),
+  and a **new third face**, `--font-script` (Pinyon Script), was added
+  specifically for the couple's names — used at the hero H1, the site
+  logo/footer names, `.eyebrow` (Our Journey / Schedule / Save us the
+  honour), and nowhere else (it's a display-only face, never used for
+  anything read at length). Correction, 2026-07-19: this doc previously
+  claimed `.eyebrow` used italic Playfair instead of script "for
+  legibility" — that was never actually true in the shipped CSS (`.eyebrow`
+  has always been `--font-script`); the note was aspirational/stale and is
+  removed here rather than perpetuated.
+- **Site-wide heading weight, 2026-07-19**: `h1,h2,h3,h4` moved from
+  semibold (600, with `-0.01em` tracking) to regular (400, no tracking)
+  everywhere, to match the Figma reference's consistently light Playfair
+  treatment — see the design-lead spec in that day's session for the full
+  before/after table. A new `--color-text-muted` token (`#8a6a5e`, a
+  WCAG-AA-corrected value — the reference's own `#9c7c70` fails AA at the
+  micro-label sizes it's used on) was added for the tertiary-ink role
+  (hero city/countdown labels, event detail labels, footer note, RSVP
+  change-link, "(optional)" tags). **One same-day, explicit user-directed
+  exception to the new regular-weight rule**: the hero H1 (couple's names)
+  now has `color: var(--color-accent)` explicitly set — it had no explicit
+  color before this and was inheriting `--color-text` brown; `.eyebrow`'s
+  color was already correct. Both were briefly also set to `font-weight:
+  700` the same day (a **browser-synthesized/faux bold**, since Pinyon
+  Script only ships one static weight) but that was reverted back to 400
+  a few hours later at the user's request — color stayed, weight didn't.
+  If bold is ever wanted here again, remember it'll be faux-bold on this
+  typeface, not a true bold cut.
+- **Hero CTA copy + a new caption, 2026-07-19**: the button changed from
+  "Celebrate With Us" to a plain "RSVP", with a new small italic line,
+  `.hero__cta-caption` ("Let us know you'll be there"), underneath it to
+  recover the warmth the longer button copy used to carry. Styled after
+  the same "warm italic Playfair aside" voice as `.invitation-card__line`.
+  Wired into the hero load-in sequence per the gotcha above.
+- **Event card "TBD" consistency fix, 2026-07-19**: the literal string
+  `TBD` was rendering three different ways in the same card (the dress-code
+  badge in mauve, the datetime line in bold rose, the venue value in bold
+  brown) — flagged as inconsistent. `js/app.js`'s `renderEvents()` now
+  conditionally adds an `.is-tbd` class to each of those three elements
+  only when the underlying value is literally `'TBD'`; a shared CSS rule in
+  `components.css` renders all three identically (`--color-text-muted`,
+  italic, weight 400) while that class is present. Once real dates/venues
+  replace `'TBD'` in `content.js`, the class stops being added and each
+  element automatically reverts to its original distinct styling (bold
+  rose datetime, bold brown venue, mauve badge) — no follow-up code change
+  needed when the real details land.
 - Accent motifs (thread lines + heart SVG) that used to be the hero's
-  signature "one bold moment" have been **retired** — the hero now leans on
-  a single finished focal photo asset instead (see Architecture patterns /
-  Hero below). Don't re-add the thread/heart motif next to that image; it
-  would be genuinely redundant, the asset already has hand-drawn hearts
-  baked in. The "spend boldness in one place" principle still holds, the
-  mechanism just moved from a live SVG motif to the photo + its atmosphere.
+  signature "one bold moment" remain **retired** — the hero still leans on
+  the single finished focal photo asset (see Architecture patterns / Hero
+  below), now sitting on the new blush/peach gradient + blob atmosphere
+  instead of flat paper. Don't re-add the thread/heart motif next to that
+  image, same reasoning as before.
+- **New features added alongside the palette, not purely cosmetic**: a live
+  countdown timer in the hero (`#hero-countdown`, updated every second by
+  `initCountdown()` in `js/app.js`, target `2027-02-24T18:00:00+05:30` —
+  same instant as the JSON-LD `startDate`), a visible hero eyebrow ("We're
+  Getting Married," replacing the old `visually-hidden` version), a pill-
+  styled RSVP link in the desktop nav (`.site-nav__cta`, desktop-only via
+  `responsive.css`), a frosted-glass nav background on scroll (was a flat
+  `--color-bg` fill), and Our Story's timeline dropped its central spine +
+  floating year marker for a large ghost-outline year number
+  (`-webkit-text-stroke`, WebKit/Blink-only — same technique and same
+  limitation as the Figma reference itself) plus a small gold caption label
+  per milestone (new `label` field on each `content.js` story entry: "The
+  Beginning," "Made It Official," "She Said Yes," "Forever Starts Here").
+  All new hero elements (eyebrow, countdown, and — as of 2026-07-19 — the
+  CTA caption below) were added to `initHeroSequence()`'s GSAP timeline
+  **and** its `revealInstantly()` fallback in `js/animations.js` — see that function's existing gotcha
+  about every animated hero element needing both.
+- **Known follow-up, not yet addressed**: `story-4.jpg` (the "Coming Soon"
+  graphic for the 2027 milestone) was designed against the old rust/maroon
+  scrapbook palette and now visually clashes with Petal Blush's rose tones.
+  Left as-is for this pass since it's a content asset, not a token — flag
+  for a redesign or regrade pass later, tracked in TODO.md.
 
 **The governing layout rule — "exhibition," confirmed 2026-07-17.** After
 exploring four broad creative directions (Editorial, Gallery, Cinema,
@@ -391,32 +495,67 @@ confirmation before implementation (per the mockup-first rule below).
 
 ## Asset inventory (assets/images/)
 
-- `wedding-childhood-pic.jpg` — **final, in-use** hero focal image. Both real
-  childhood photos die-cut onto one scalloped card with hand-drawn hearts,
-  GROOM/BRIDE labels, and a "WE'RE GETTING MARRIED!" banner baked into the
-  asset. 700x914, ~195KB (recompressed from an original 2MB/896x1170 PNG —
-  see HANDOFF.md for the design-lead review that flagged the original as an
-  LCP problem). This superseded the two-separate-cutouts hero treatment.
+- `wedding-childhood-story-v5-transparent.webp` — **final, in-use** hero
+  focal `<img src>` (converted 2026-07-19, same day as the PNG swap below).
+  The PNG source is genuinely transparent (832x1296, `mode: RGBA`, alpha
+  spans 0-255) but weighed ~1.1MB — the heaviest hero image the site had
+  shipped. Re-encoded as lossy WebP with alpha preserved (Pillow,
+  `quality=82, method=6`) → **~107KB, a ~90% reduction**, visually
+  indistinguishable from the PNG at display size (checked directly, both
+  the photographic areas and the hard-edged hand-drawn hearts/text).
+  `index.html`'s hero `<img src>` points at this `.webp` file. **The
+  OG/Twitter/JSON-LD meta tags deliberately still point at the `.png`**
+  (see below), not this WebP — that's a one-time server-side fetch by a
+  link-preview crawler, not something every visitor's browser pays for,
+  and WebP support across crawlers (WhatsApp/iMessage/X card validators)
+  is less consistent than in real browsers, so the safer/universal format
+  was kept there on purpose.
+- `wedding-childhood-story-v5-transparent.png` — the PNG source for the
+  `.webp` above; still referenced by the OG/Twitter/JSON-LD meta tags (see
+  above for why). Same die-cut composition (both real childhood photos
+  with hand-drawn hearts, GROOM/BRIDE labels, "WE'RE GETTING MARRIED!"
+  banner), genuinely transparent, 832x1296, ~1.1MB.
+- `wedding-childhood-story-v3.png` — the previous hero image (see above),
+  live for only part of one session before the v5-transparent swap. Opaque
+  white background (no alpha), 667KB. Kept on disk, unreferenced.
+- `wedding-childhood-pic.jpg` — the original hero focal image, superseded
+  by the v3/v5 die-cut-on-transparent direction. 700x914, ~195KB,
+  recompressed from an original 2MB/896x1170 PNG — see HANDOFF.md for the
+  design-lead review that flagged the original as an LCP problem. Kept on
+  disk, unreferenced, in case the swap needs reverting.
+- `wedding-childhood-story-pink.png`, `wedding-childhood-story-v2.png` —
+  earlier iterations of the same die-cut composition explored before v5
+  was picked. Reference only, not rendered on the site.
 - `anubhav-cutout.png`, `naisargi-cutout.png` — the same two childhood photos
   as individual background-removed cutouts (real alpha transparency),
   head-through-torso, proportion-matched. No longer rendered directly in the
-  hero (superseded by `wedding-childhood-pic.jpg` above), but kept as they're
-  the honest source material behind that composite and may be reused
-  elsewhere (e.g. Our Story).
+  hero, but kept as they're the honest source material behind the die-cut
+  composite and may be reused elsewhere (e.g. Our Story).
 - `anubhav-childhood.jpeg`, `naisargi-childhood.jpeg` — original source photos
   with backgrounds intact. Reference only, not rendered on the site.
 - `anubhav-childhood-without-background.png`,
   `naisargi-childhood-without-background.png` — user-provided background-removed
   versions before the head-through-torso crop was applied. Reference only.
 - `paper-grain.svg` — tileable noise texture for the paper background.
-- `hero.svg`, `film-thumbnail.svg` — remaining placeholder art (hero OG/meta
-  fallback, film thumbnail). **Note**: `index.html`'s OG/Twitter/JSON-LD meta
-  tags still point at `hero.svg`, not the real hero photo — a guest sharing
-  the link will see the stale placeholder in the preview card. Flagged, not
-  yet fixed.
-- `story-1.jpg`..`story-4.jpg` — **real images, in use, all four Our Story
-  milestones** (2026-07-18). `story-1.jpg`/`story-2.jpg`/`story-3.jpg` are
-  real candid photos (meeting at the Meesho office, an early-relationship
+- `hero.svg`, `film-thumbnail.svg` — remaining placeholder art (film
+  thumbnail; `hero.svg` is no longer referenced anywhere — the OG/Twitter/
+  JSON-LD meta tags were fixed to point at the real hero photo back on
+  2026-07-18, see TODO.md's Housekeeping entry for that date. This doc had
+  drifted and still claimed otherwise; corrected 2026-07-19).
+- `story-1.webp`..`story-4.webp` — **in-use, all four Our Story milestones**
+  (`content.js`'s `photo` fields, converted to WebP 2026-07-19 for load
+  time; the underlying photo content/grading is unchanged from the
+  `.jpg` originals below). `story-1`/`story-2`/`story-4` re-encoded at
+  Pillow `quality=82`, netting 17-42% smaller; `story-3` needed
+  `quality=72` to actually beat its JPEG (WebP doesn't always win over an
+  already-well-compressed JPEG on high-texture/noisy content — tested at
+  82 first, it came out *larger* than the JPEG, so quality was stepped
+  down until it won). All four checked visually side-by-side with the
+  source JPEGs — no visible artifacts at display size.
+- `story-1.jpg`..`story-4.jpg` — the JPEG originals the `.webp` files above
+  were converted from; no longer referenced by `content.js` but kept on
+  disk (2026-07-18). `story-1.jpg`/`story-2.jpg`/`story-3.jpg` are real
+  candid photos (meeting at the Meesho office, an early-relationship
   candid, and the proposal, respectively), each cropped to 4:3 and graded
   via `scripts/grade-candid-photo.py` (see Architecture patterns below) to
   match the site's warm palette — 1000x750, EXIF stripped, under 160KB
@@ -426,11 +565,12 @@ confirmation before implementation (per the mockup-first rule below).
   already a finished asset, not a candid photo — correct for now since the
   wedding (Feb 24, 2027) hasn't happened; replace with a real wedding photo
   after the fact, then it should go through the same grading script as the
-  others for consistency. These supersede `story-1.svg`..`story-4.svg`,
-  which are no longer referenced by `content.js` but are left in place,
-  unused. The original, ungraded source photos are kept alongside the
-  finals as the source of truth if a grade ever needs re-running with
-  different parameters — don't delete them: `story-placeholder-1.JPG`
+  others for consistency (and then the same JPEG→WebP conversion this note
+  describes). These supersede `story-1.svg`..`story-4.svg`, which are no
+  longer referenced by `content.js` but are left in place, unused. The
+  original, ungraded source photos are kept alongside the finals as the
+  source of truth if a grade ever needs re-running with different
+  parameters — don't delete them: `story-placeholder-1.JPG`
   (source for `story-1.jpg`), `story-milestone-2-v2.png` (source for
   `story-2.jpg` — a second, better-cropped version of the same moment
   swapped in 2026-07-18, superseding the original `story-milestone-2.jpeg`,

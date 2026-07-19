@@ -130,7 +130,12 @@
       "Bash(python3 -c \"import secrets; print\\(secrets.token_urlsafe\\(18\\)\\)\")",
       "Bash(pkill -f \"http.server 8931\")",
       "Bash(pkill -f \"http.server 8932\")",
-      "Bash(pkill -f \"http.server 8933\")"
+      "Bash(pkill -f \"http.server 8933\")",
+      "Bash(base64 -i /Users/anubhavgaba/Wedding/assets/images/wedding-childhood-pic.jpg -o hero-photo.b64)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(npm install *)",
+      "Bash(awk '/^\\\\.hero {/,/^}/' css/components.css)",
+      "Bash(sips -g pixelWidth -g pixelHeight assets/images/wedding-childhood-story-v3.png)"
     ]
   }
 }

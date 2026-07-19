@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "4173"],
       "port": 4173
+    },
+    {
+      "name": "figma-reference-site",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "/Users/anubhavgaba/Downloads/Wedding Website Color Palette-2", "run", "dev"],
+      "port": 5173
     }
   ]
 }

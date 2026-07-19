@@ -19,7 +19,8 @@ start of every session.
 
 1. Information architecture — done (implicitly, via the section order below)
 2. Wireframes — done (implicitly, skipped formal deliverable, went straight to design system + build)
-3. Design system — done, v1 (editorial) then revised to v2 (scrapbook), see CLAUDE.md
+3. Design system — done, v1 (editorial) → v2 (scrapbook) → v3 (Petal
+   Blush, current, 2026-07-19), see CLAUDE.md
 4. HTML implementation — done, all 10 sections
 5. CSS implementation — done, mobile-first + responsive layers
 6. Animations — done: scroll-reveal system, plus hero load-in choreography
@@ -41,49 +42,43 @@ start of every session.
 
 ## Section-by-section design status
 
-The site's visual language is the "scrapbook" palette/type system (see
-CLAUDE.md). As of 2026-07-17, layout/composition is governed by a second,
-more specific rule on top of that palette — the confirmed **"exhibition"
-rule**: one dominant visual, one text placard, one action (if any), generous
-negative space, per screen (full definition in CLAUDE.md's Design system
-section). Status of applying it:
+**Superseded 2026-07-19**: the site's visual language pivoted from
+"scrapbook" to **"Petal Blush"** (romantic rose/blush/gold), ported from an
+external Figma Make reference the user supplied — see CLAUDE.md's Design
+System section for the full token/font/feature list. The **"exhibition"
+rule** (one dominant visual, one text placard, one action if any, generous
+negative space per screen — full definition in CLAUDE.md) still governs
+layout/composition; the palette pivot changed colors/type/some structure
+(Our Story in particular), not this underlying rule.
 
-| Section | Structural build | Scrapbook palette | Exhibition rule applied |
+**Also as of 2026-07-19: Gallery, Guest Memories, Guestbook, Wedding Film,
+and FAQ are commented out of the live site** (not deleted — user request,
+see TODO.md), so their rows below describe code that exists but isn't
+currently rendered. Don't propose further design work on them until the
+user un-hides them.
+
+| Section | Structural build | Current palette | Exhibition rule applied |
 |---|---|---|---|
-| Hero | done | done | **done** — photo unveiled first (dominant visual), names+date is one placard, one CTA. Stacked paper-card and oversized H1 removed to make room for it |
-| Gallery (locked state) | done | done | **done** — one sealed frame (heart-seal motif), one caption, zero action |
-| Invitation | done | done (keepsake card, washi tape, heart seal) | **done** — collapsed eyebrow+heading+message into one placard ("You're Invited" / "come celebrate the start of our forever"), card itself is the dominant visual (gold hairline inner rule added), seal moved to bottom as a closing mark, zero action, extra desktop negative space |
-| Our Story | done, real content (4 real milestones + photos, 2026-07-18) | inherits global tokens only | not started — card/timeline grid is multiple co-equal visuals, needs one-milestone-per-screen sequencing |
-| Events | done, real content (4 real events, all details TBD, 2026-07-18) | inherits global tokens only | **explicitly declined by the user (2026-07-18)** — design-lead proposed a one-program/gold-thread redesign for the details-TBD state; the user preferred keeping the existing card-grid layout as-is, just with TBD values. Not planned to revisit unless asked. |
-| RSVP | done — rebuilt as a static form (2026-07-18), superseding the conversational flow, at the user's explicit direction | done — paper card, warm-maroon errors, gold hairline | **done** — one paper-card dominant visual, one placard, one action (submit); design-lead spec'd and mockup-confirmed |
-| Gallery (unlocked state) | done | inherits global tokens only | not started — will need one-photo-focal treatment when it unlocks |
-| Guest Memories | done | inherits global tokens only | not started |
-| Wedding Film | done | inherits global tokens only | not started |
-| Guestbook | done | inherits global tokens only | not started |
-| FAQ | done | inherits global tokens only | not started |
-| Footer | done | inherits global tokens only | not started — confirmed mockup treats this as "one closing mark, one line, minimal utility chrome" |
+| Hero | done, plus a live countdown timer + floating-photo animation (2026-07-19) | Petal Blush | **done** — photo unveiled first (dominant visual), names+date is one placard, one CTA |
+| Invitation | done | Petal Blush (restored "Together with their families" eyebrow line, 2026-07-19) | **done** — one placard, card is the dominant visual, zero action |
+| Our Story | done, real content (4 real milestones + photos) | Petal Blush — **structurally rebuilt 2026-07-19**: ghost-outline year numerals + gold milestone labels replaced the old central spine/marker, plus a subtle scroll-scrubbed parallax on each photo | still the alternating card grid (multiple co-equal visuals per screen) — the one-milestone-per-screen sequencing explored via design-lead ("The Story Writes Itself" mockup) was never built; not currently planned unless the user asks again |
+| Events | done, real content (4 real events, all details TBD) | Petal Blush — **restructured 2026-07-19**: dress code moved to a header badge, description moved to an italic closing quote, grid changed to a clean 2x2 (was 3-then-1) | **explicitly declined by the user (2026-07-18)** for the one-program/gold-thread redesign; card-grid layout stays, just restyled. Settled — don't re-propose. |
+| RSVP | done — static form (fields deliberately unchanged through the 2026-07-19 palette pivot per explicit user correction) | Petal Blush | **done** — one paper-card dominant visual, one placard, one action (submit) |
+| Sealed coda | done (2026-07-18) — a small mystery-motif screen for the hidden sections below, with a wax-seal "Pressed Seal" stamp animation (2026-07-19) | Petal Blush | **done** — zero action, one placard, the site's most literal "restraint is the anticipation" screen |
+| Footer | done | Petal Blush (script couple names) | **done** |
+| Gallery / Guest Memories / Wedding Film / Guestbook / FAQ | done, but **currently hidden** (commented out, 2026-07-18) | Petal Blush tokens exist in the commented-out markup, not visually verified live | not started — moot until un-hidden |
 
-Extending the exhibition rule to Our Story and the still-untouched sections
-(Gallery-unlocked, Memories, Film, Guestbook, FAQ, Footer) is a real
-structural change — it turns each card grid into a one-thing-per-screen
-sequence — not just a token pass. Per this project's established
-one-section-at-a-time pattern, get the user's go-ahead before starting.
-Events is settled (see table row above) — don't re-propose it. **Note**: a
-combined mockup covering all the still-untouched sections was built
-2026-07-18 (`https://claude.ai/code/artifact/f7c1d9d7-8032-40aa-b1c0-bafb7e2bd97e`)
-but was never confirmed as a batch — treat it as reference only, confirm
-each section individually as it comes up, the same way Story/Events/RSVP
-each ended up going their own way rather than following that mockup as
-originally proposed.
+A combined mockup covering the sections above (built 2026-07-18,
+`https://claude.ai/code/artifact/f7c1d9d7-8032-40aa-b1c0-bafb7e2bd97e`) was
+never confirmed as a batch and predates both the palette pivot and the
+sections being hidden — treat it as historical reference only.
 
 Separately, three small **contextual copy additions** ("more is coming"
-notes) were spec'd and mockup-confirmed 2026-07-18 for FAQ, Guestbook, and
-the Footer — not an exhibition-rule pass, just short reassurance copy in
-the existing italic-serif "quiet aside" voice, explicitly **not** a
-site-wide banner (design-lead's call, given the site is now seen by real
-guests — see CLAUDE.md). Mockup:
+notes) were spec'd and shipped 2026-07-18 for FAQ, Guestbook, and the
+Footer — since FAQ and Guestbook are now hidden, only the Footer's version
+of this is currently live (and even that was simplified further on
+2026-07-19, see TODO.md). Mockup:
 `https://claude.ai/code/artifact/71e7b0a6-7462-4bad-820d-aac9ffc3664a`.
-See TODO.md for implementation status.
 
 ## Backend (future-ready) — target shape when Step 9 starts
 

@@ -12,10 +12,10 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Naisargi &amp; Anubhav — We're Getting Married" />
   <meta property="og:description" content="Join us as we celebrate our wedding on February 24, 2027 in Vadodara, Gujarat." />
-  <meta property="og:image" content="https://ragerx7.github.io/anaisstory/assets/images/wedding-childhood-pic.jpg" />
-  <meta property="og:image:width" content="700" />
-  <meta property="og:image:height" content="914" />
-  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image" content="https://ragerx7.github.io/anaisstory/assets/images/wedding-childhood-story-v5-transparent.png" />
+  <meta property="og:image:width" content="832" />
+  <meta property="og:image:height" content="1296" />
+  <meta property="og:image:type" content="image/png" />
   <meta property="og:url" content="https://ragerx7.github.io/anaisstory/" />
   <meta property="og:locale" content="en_US" />
 
@@ -23,7 +23,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Naisargi &amp; Anubhav — We're Getting Married" />
   <meta name="twitter:description" content="Join us as we celebrate our wedding on February 24, 2027 in Vadodara, Gujarat." />
-  <meta name="twitter:image" content="https://ragerx7.github.io/anaisstory/assets/images/wedding-childhood-pic.jpg" />
+  <meta name="twitter:image" content="https://ragerx7.github.io/anaisstory/assets/images/wedding-childhood-story-v5-transparent.png" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
@@ -31,15 +31,15 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Pinyon+Script&family=Jost:wght@300;400;500;600&display=swap" />
 
   <!-- Styles (order matters: tokens/base -> components -> responsive -> motion) -->
   <!-- ?v=N is a deliberate, permanent cache-buster — bump it whenever ANY
        file below changes. See CLAUDE.md's caching gotcha for why. -->
-  <link rel="stylesheet" href="css/style.css?v=8" />
-  <link rel="stylesheet" href="css/components.css?v=8" />
-  <link rel="stylesheet" href="css/responsive.css?v=8" />
-  <link rel="stylesheet" href="css/animations.css?v=8" />
+  <link rel="stylesheet" href="css/style.css?v=17" />
+  <link rel="stylesheet" href="css/components.css?v=17" />
+  <link rel="stylesheet" href="css/responsive.css?v=17" />
+  <link rel="stylesheet" href="css/animations.css?v=17" />
 
   <!-- Structured data -->
   <script type="application/ld+json">
@@ -55,7 +55,7 @@
       "name": "Main Ceremony Hall",
       "address": "Vadodara, Gujarat"
     },
-    "image": ["https://ragerx7.github.io/anaisstory/assets/images/wedding-childhood-pic.jpg"],
+    "image": ["https://ragerx7.github.io/anaisstory/assets/images/wedding-childhood-story-v5-transparent.png"],
     "description": "The wedding ceremony of Naisargi and Anubhav."
   }
   </script>
@@ -66,7 +66,7 @@
   <header class="site-header">
     <div class="site-header__inner">
       <a class="site-logo" href="#home" aria-label="Home">
-        <span data-couple-names></span>
+        <span data-couple-initials></span>
       </a>
 
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation menu">
@@ -76,7 +76,7 @@
       <nav class="site-nav" id="site-nav" data-open="false" aria-label="Primary">
         <a href="#story">Our Story</a>
         <a href="#events">Events</a>
-        <a href="#rsvp">RSVP</a>
+        <a href="#rsvp" class="site-nav__cta">RSVP</a>
         <!-- Gallery, Memories, Guestbook, Film temporarily removed from nav until those sections are ready; see CLAUDE.md -->
       </nav>
     </div>
@@ -86,15 +86,15 @@
     <!-- ============ 1. HERO ============ -->
     <section class="hero" id="home" aria-label="Welcome">
       <div class="hero__content">
-        <p class="visually-hidden">We&rsquo;re getting married!</p>
+        <p class="hero__eyebrow">We&rsquo;re Getting Married</p>
         <div class="hero__photo-frame">
           <img
             class="hero__feature-photo"
-            src="assets/images/wedding-childhood-pic.jpg"
-            alt="Childhood photos of Anubhav and Naisargi die-cut onto a card, labeled Groom and Bride"
+            src="assets/images/wedding-childhood-story-v5-transparent.webp"
+            alt="Childhood photos of Anubhav and Naisargi die-cut with hand-drawn hearts, labeled Groom and Bride"
             loading="eager"
-            width="700"
-            height="914"
+            width="832"
+            height="1296"
           />
         </div>
         <h1><span data-couple-names>Naisargi &amp; Anubhav</span></h1>
@@ -106,7 +106,17 @@
           </span>
           <span class="hero__date-city" data-wedding-city>Vadodara, Gujarat</span>
         </div>
-        <a class="btn btn--festive" href="#rsvp">Celebrate With Us</a>
+        <div class="hero__countdown" id="hero-countdown" aria-label="Countdown to the wedding">
+          <div class="countdown-unit"><span class="countdown-unit__value" data-countdown="days">00</span><span class="countdown-unit__label">Days</span></div>
+          <span class="countdown-sep" aria-hidden="true">&middot;</span>
+          <div class="countdown-unit"><span class="countdown-unit__value" data-countdown="hours">00</span><span class="countdown-unit__label">Hours</span></div>
+          <span class="countdown-sep" aria-hidden="true">&middot;</span>
+          <div class="countdown-unit"><span class="countdown-unit__value" data-countdown="minutes">00</span><span class="countdown-unit__label">Minutes</span></div>
+          <span class="countdown-sep" aria-hidden="true">&middot;</span>
+          <div class="countdown-unit"><span class="countdown-unit__value" data-countdown="seconds">00</span><span class="countdown-unit__label">Seconds</span></div>
+        </div>
+        <a class="btn btn--festive" href="#rsvp">RSVP</a>
+        <p class="hero__cta-caption">Let us know you&rsquo;ll be there</p>
       </div>
       <a class="hero__scroll-indicator" href="#invitation" aria-label="Scroll to invitation">
         <span data-lucide="chevron-down" aria-hidden="true"></span>
@@ -118,6 +128,7 @@
       <div class="section-inner">
         <div class="invitation-card" data-reveal>
           <span class="invitation-card__tape" aria-hidden="true"></span>
+          <p class="invitation-card__eyebrow">Together with their families</p>
           <h2 id="invitation-heading" class="invitation-card__title">You&rsquo;re Invited</h2>
           <p class="invitation-card__line">come celebrate the start of our forever</p>
           <svg class="invitation-card__seal" viewBox="0 0 34 34" aria-hidden="true">
@@ -133,6 +144,7 @@
         <div class="section-heading" data-reveal>
           <span class="eyebrow">Our Journey</span>
           <h2 id="story-heading">Our Story</h2>
+          <span class="ornament" aria-hidden="true">&#10087;</span>
         </div>
         <div class="timeline" id="story-timeline" role="list"></div>
       </div>
@@ -145,19 +157,20 @@
           <span class="eyebrow">Schedule</span>
           <h2 id="events-heading">Events</h2>
           <p>Everything you need to join us for each celebration.</p>
+          <span class="ornament" aria-hidden="true">&#10087;</span>
         </div>
         <div class="events-grid" id="events-grid"></div>
       </div>
     </section>
 
     <!-- ============ 5. RSVP ============ -->
-    <section class="section" id="rsvp" aria-labelledby="rsvp-heading">
+    <section class="section section--alt" id="rsvp" aria-labelledby="rsvp-heading">
       <div class="section-inner section-inner--narrow">
         <div class="section-heading" data-reveal>
           <span class="eyebrow">Save us the honour</span>
           <h2 id="rsvp-heading">RSVP</h2>
           <p>A few quick details — under a minute, we promise.</p>
-          <span class="rsvp-hairline" aria-hidden="true"></span>
+          <span class="ornament" aria-hidden="true">&#10087;</span>
         </div>
         <div class="rsvp-flow" id="rsvp-flow" aria-live="polite"></div>
         <noscript>
@@ -277,7 +290,7 @@
 
   <!-- ============ 10. FOOTER ============ -->
   <footer class="site-footer">
-    <p><span data-couple-names></span></p>
+    <p class="site-footer__names"><span data-couple-names></span></p>
     <p class="site-footer__note">Made with love, <span data-lucide="heart" aria-hidden="true"></span> for our friends and family.</p>
   </footer>
 
@@ -288,12 +301,12 @@
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
 
   <!-- App modules (order matters: data/utils first, orchestrator last) -->
-  <script src="js/content.js?v=8" defer></script>
-  <script src="js/utils.js?v=8" defer></script>
-  <script src="js/navigation.js?v=8" defer></script>
-  <script src="js/animations.js?v=8" defer></script>
-  <script src="js/rsvp.js?v=8" defer></script>
-  <script src="js/gallery.js?v=8" defer></script>
-  <script src="js/app.js?v=8" defer></script>
+  <script src="js/content.js?v=17" defer></script>
+  <script src="js/utils.js?v=17" defer></script>
+  <script src="js/navigation.js?v=17" defer></script>
+  <script src="js/animations.js?v=17" defer></script>
+  <script src="js/rsvp.js?v=17" defer></script>
+  <script src="js/gallery.js?v=17" defer></script>
+  <script src="js/app.js?v=17" defer></script>
 </body>
 </html>

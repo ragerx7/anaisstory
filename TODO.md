@@ -318,6 +318,181 @@ the start of every session.
     request; static copy now reads "Made with love, ♥ for our friends and
     family." `[data-guest-name]` had no other usages in the codebase
     (confirmed via grep), so nothing else was affected by removing it.
+- **Full palette pivot: "scrapbook" → "Petal Blush" (2026-07-19).** The
+  user explored Pop/Hip/Traditional-Indian/First-Light directions via
+  design-lead this session (see that session's mockup artifacts), then
+  separately commissioned a full Figma Make replica of the site in a
+  romantic rose/blush/gold direction and asked for it to be implemented for
+  real, with two explicit corrections: RSVP form fields unchanged (no
+  email field, no relabeled attend buttons), and Events kept as the real
+  4-event list (Mehendi/Sangeet & Cocktails/Haldi/Wedding, all `TBD`) not
+  the reference's fabricated 4-event list/specifics. Full details of every
+  token/font/feature change are in CLAUDE.md's Design System section
+  (rewritten in full for this pivot, not appended) — summary here:
+  - **Tokens**: `--color-bg/#fdf6f0`, `--color-accent/#8b3a52` ("Bridal
+    Rose"), `--color-accent-deep/#5c3040` (plum), `--color-gold/#c9935a`,
+    plus three new tokens with no prior equivalent (`--color-blush`,
+    `--color-mauve`, `--color-peach`). Every hardcoded shadow/glow rgba in
+    `components.css` re-tinted from the old rust family to the new rose
+    family. `--paper-grain` set to `none` (texture retired; asset kept on
+    disk, unused) — verified this doesn't break any consumer since the
+    token sits in a background shorthand's non-last layer.
+  - **Fonts**: Playfair Display + Jost replace Cormorant Garamond + Inter;
+    a new script face (Pinyon Script, `--font-script`) added for the
+    couple's names only (hero H1, site logo, footer names) — deliberately
+    *not* used for section eyebrows (kept in italic Playfair for
+    readability, a deviation from the Figma reference's own script-eyebrow
+    choice).
+  - **New real features, not just cosmetic**: a live countdown timer in
+    the hero (`initCountdown()` in `js/app.js`, targets the same
+    `2027-02-24T18:00:00+05:30` instant as the JSON-LD `startDate`,
+    updates every second); a visible hero eyebrow ("We're Getting
+    Married," was `visually-hidden` before); a pill-styled RSVP link in
+    the desktop nav (`.site-nav__cta`); a frosted-glass blur on the nav
+    background on scroll (was flat `--color-bg`). All new hero elements
+    were wired into `initHeroSequence()`'s GSAP timeline *and* its
+    `revealInstantly()` fallback in `js/animations.js` — the existing
+    gotcha about that function applies to every element added here too.
+  - **Our Story restructured**: dropped the central spine + floating year
+    marker (`.timeline::before`, `.timeline-item__marker` — both removed
+    from `components.css`/`responsive.css`) for a large ghost-outline year
+    number (`-webkit-text-stroke`, same WebKit/Blink-only technique as the
+    Figma reference) plus a new small gold caption label per milestone. Each
+    `content.js` story entry gained a `label` field ("The Beginning," "Made
+    It Official," "She Said Yes," "Forever Starts Here") — real narrative
+    labels, not fabricated facts, same spirit as the honest `TBD` events.
+  - **What was explicitly NOT ported from the Figma reference**: its
+    fictional Story narrative (2018→2023 Unsplash-photo placeholder story
+    about a "college cultural fest" and a "Champaner stepwell proposal") —
+    kept the real 2024→2027 timeline with the real Meesho photos already in
+    `content.js`; its RSVP email field and "Joyfully accepts/Regretfully
+    declines" labels — kept the real Name/attend-yes-no/guest-count/phone/
+    message fields exactly; its fabricated Events specifics (real venues,
+    dates, dress codes, a 4th event called "Reception" instead of "Haldi")
+    — kept the real 4-event list with honest `TBD` fields.
+  - **Known follow-up, not addressed this pass**: `story-4.jpg` (the
+    "Coming Soon" graphic for the 2027 milestone) was designed against the
+    old rust/maroon scrapbook palette and now visually clashes with Petal
+    Blush's rose tones — needs a regrade or redesign pass later.
+  - Verified live end-to-end (desktop + mobile): hero countdown ticking,
+    nav frosted-on-scroll + active-link highlighting + mobile slide-in menu,
+    Invitation/Story/Events/RSVP/sealed-coda/footer all correctly recolored,
+    real content intact everywhere, no console errors. `?v=N` bumped 8→9.
+  - **Follow-up pass (2026-07-19, user comparison against the Figma
+    reference caught several real gaps missed in the first pass)**:
+    - Nav logo now shows script "N & A" initials (new `[data-couple-initials]`
+      populate step in `js/app.js`), not the full couple names — the full
+      names stay everywhere else (hero H1, footer).
+    - `.btn--festive` (hero CTA + RSVP submit, same class) now uses a real
+      rose→plum diagonal gradient + a rose-tinted box-shadow, replacing the
+      flat `--color-accent-deep` fill from the first pass.
+    - Our Story photos now have a subtle scroll-scrubbed parallax
+      (`initStoryParallax()` in `js/animations.js`, GSAP ScrollTrigger with
+      `scrub: true`, photos pre-scaled to 1.15x so the pan has headroom
+      without exposing the card's edge) — this was in the Figma reference's
+      brief but not actually in its own source, and wasn't in the real
+      site's first pass either.
+    - Events cards restructured: dress code moved from a detail row into a
+      pill badge in the header, the description moved from a plain
+      mid-card paragraph to an italic closing quote pinned to the card's
+      bottom (`.event-card` is now `display:flex; flex-direction:column`
+      so the quote's `margin-top:auto` works across cards of uneven
+      length) — still showing honest `TBD` for every real field, nothing
+      fabricated.
+    - Events grid changed from 3 columns to 2 at desktop (was a 3+1
+      uneven row for the real 4-event list) — now a clean 2x2, achieved by
+      just removing the desktop override so it inherits the tablet
+      breakpoint's existing 2-column rule.
+    - RSVP field labels tightened to match the reference's exact
+      type-spec (`0.8rem`, `letter-spacing: 0.04em`) instead of the
+      previous slightly-larger `--fs-small` with no tracking.
+    - Verified live via a mix of computed-style/DOM checks and screenshots
+      (the Browser pane's known screenshot-compositing glitch reappeared
+      mid-session — confirmed via `getBoundingClientRect()`/computed
+      styles that the underlying layout was correct throughout, not an
+      actual regression). No console errors. `?v=N` bumped 9→10.
+    - **Second follow-up pass (2026-07-19, another round of user
+      screenshot comparison caught real gaps)**:
+      - `.btn` (the shared class behind the hero CTA and RSVP submit —
+        `.btn--festive` is a modifier on it) was still using
+        `--radius-sm` (4px) from the old scrapbook design, never updated
+        to a pill — fixed to `border-radius: 999px`, matching the
+        reference's `rounded-full` buttons. (RSVP's Yes/No attend buttons
+        intentionally stay their own separate `.attend-btn` class at a
+        moderate radius, not a pill — that's what the reference does too.)
+      - `.eyebrow` ("Our Journey," "Schedule," "Save us the honour," etc.)
+        was still italic Playfair Display from the first pass's deliberate
+        readability deviation — reverted that deviation per explicit user
+        comparison; eyebrows are now the actual Pinyon Script face, matching
+        the reference exactly.
+      - Added the recurring `.ornament` divider (two gradient hairlines
+        flanking a gold "❧" glyph) under the Story/Events/RSVP section
+        headings — this whole element was missing from the first pass
+        entirely, not just mis-styled.
+      - Added the Invitation card's "Together with their families" eyebrow
+        line (new `.invitation-card__eyebrow`) — also missing entirely
+        before. Verified it doesn't collide with the tape or title (checked
+        via `getBoundingClientRect()`, clear ~60px gaps on both sides).
+      - Removed the now-dead `.rsvp-hairline` CSS (a single gold line under
+        the RSVP heading) since the new shared `.ornament` replaces it
+        there too, for consistency with Story/Events.
+      - Verified live: pill radius, script eyebrow font, all three
+        ornaments, and the Invitation eyebrow all confirmed via computed
+        styles/DOM (screenshot tool hit the same known compositing glitch
+        again). No console errors. `?v=N` bumped 10→11.
+    - **Third pass (2026-07-19) — the user repeated the same broad
+      "background/foreground/gradient/spacing/padding doesn't match"
+      feedback a third time, so this pass did a full value-by-value audit
+      against the reference source instead of another round of spot-fixes.**
+      Found several real, previously-missed issues:
+      - **`--shadow-soft` itself was never re-tinted** during the whole
+        palette pivot — it was still `rgba(61,42,26,...)` (the old ink
+        color) despite every *hardcoded* shadow rgba elsewhere having been
+        fixed earlier. Since this one token backs the shadow on the RSVP
+        card, event cards, invitation card, and gallery-locked frame, this
+        alone was likely the single biggest contributor to the "doesn't
+        match" feedback — every raised surface's shadow was still the old
+        palette. Fixed to `rgba(139,58,82,...)`.
+      - **Hero background gradient was structurally wrong, not just
+        approximate**: the reference's `${C.blush}55` is a hex color with
+        an appended alpha suffix (`55` hex ≈ 33% opacity), which I'd
+        misread as a gradient stop *position* — so the gradient had solid
+        blush at a 55% stop instead of a translucent 33%-opacity blush at
+        the 50% stop. Fixed to `rgba(242,196,206,0.33) 50%`.
+      - **Container widths were approximated instead of exact**: header
+        was 1200px (reference: `max-w-6xl` = 1152px), Story/Events content
+        was 1200px (reference: `max-w-5xl` = 1024px), RSVP content was
+        720px (reference: `max-w-2xl` = 672px). `--content-max-width` and
+        `--content-narrow-width` corrected to 1024px/672px; the header
+        needed its own explicit 1152px since it and Story/Events had been
+        incorrectly sharing one token for two different reference values.
+      - **A real structural bug in the Events cards**: padding was on
+        `.event-card` itself, which meant the absolutely-positioned
+        top-accent-bar (`::before`, `top:0;left:0;right:0`) was inset by
+        that padding instead of flush with the card's true outer edge (an
+        absolutely-positioned child's containing block is its ancestor's
+        *padding* box, not its border box). Fixed by moving all padding to
+        a new `.event-card__body` wrapper (`js/app.js`'s `renderEvents()`
+        now wraps the card's content in this div) and leaving `.event-card`
+        itself unpadded — matches the reference's own two-layer structure
+        (unpadded outer card + a separately-padded `p-7` inner div) and
+        was never just a styling choice, it's how the accent bar can work
+        at all.
+      - Padding/gap tightened to exact reference values throughout:
+        Invitation card `4rem 2.5rem` (was asymmetric `4rem 1.875rem
+        2.75rem`, plus a desktop-only override removed entirely — the
+        reference doesn't vary this by breakpoint); RSVP card radius `20px`
+        (was 16px) and border added (was missing entirely); Events grid
+        gap `1.25rem` (was 2.5rem); Story timeline gap `5rem` between
+        milestones (was 6rem) and `2.5rem` within each milestone at desktop
+        (was 6rem); Footer `padding-block: 4rem` (was 6rem); Event card
+        body padding `1.75rem` (was 2.5rem, and on the wrong element, see
+        above).
+      - Verified every corrected value live via computed styles
+        (`getComputedStyle`/`getBoundingClientRect`) rather than
+        screenshots, since the Browser pane's compositing glitch was
+        active again this session. No console errors. `?v=N` bumped
+        11→12.
 - **Gallery, Guest Memories, Guestbook, and Wedding Film sections removed
   from the live site for now (2026-07-18), user request.** This is a
   deliberate exception to CLAUDE.md's usual "in-place more-is-coming
@@ -334,13 +509,72 @@ the start of every session.
   `gallery.js`/`app.js` already null-guard on their target elements
   missing. Verified in the browser: no console errors, remaining sections
   (Story → Events → RSVP → FAQ) flow correctly with no gap.
+- **Section background rhythm + typography alignment pass (2026-07-19)**,
+  both via design-lead spec + browser-preview mockup confirmed before
+  implementing, per the mockup-first rule: (1) RSVP switched to the mist
+  alt-background (`.section--alt`) and the footer got a raised background +
+  hairline top border, closing the two gaps between the live site and the
+  "Petal Blush" Figma reference's alternating rhythm; (2) site-wide heading
+  weight 600→400, letter-spacing removed, new `--color-text-muted` token
+  added and routed to six secondary-label elements, body/lead copy set to
+  weight 300, buttons to weight 500/wider tracking, `.field-error`
+  recolored plum→rose. `?v=N` bumped 12→14 across both.
+- **Four targeted follow-up changes (2026-07-19, same session)**, `?v=15`:
+  hero CTA copy simplified to "RSVP" + a new warm italic caption
+  ("Let us know you'll be there") underneath, wired into the hero load-in
+  sequence; hero image swapped to `wedding-childhood-story-v3.png` (all
+  OG/Twitter/JSON-LD refs + the `<img>` updated); hero H1 + `.eyebrow` set
+  to bold + `--color-accent`; the three different "TBD" treatments inside
+  each event card unified via a conditional `.is-tbd` class that stops
+  applying once real data replaces the placeholder.
+- **Two more corrections on top of the above (2026-07-19, same session)**,
+  `?v=16`: hero image swapped again to `wedding-childhood-story-v5-
+  transparent.png` — this one is genuinely transparent (verified via PIL:
+  `mode: RGBA`, alpha spans 0-255), fixing the white-box problem the v3
+  swap introduced; the file is heavier (~1.1MB) though, not yet optimized
+  (see CLAUDE.md's asset inventory). Hero H1 + `.eyebrow` reverted from
+  bold back to regular (400) at the user's request — the `--color-accent`
+  color stays, only the weight was rolled back.
+- **Image load-time pass (2026-07-19, same session)**, `?v=17`: converted
+  the two in-use, load-bearing image sets to WebP. Hero image → `wedding-
+  childhood-story-v5-transparent.webp` (~107KB, down from the PNG's
+  ~1.1MB, ~90% smaller, alpha preserved, visually checked against the
+  source) — the `<img src>` points at the WebP now, but OG/Twitter/JSON-LD
+  meta deliberately kept on the `.png` for link-preview-crawler
+  compatibility (see CLAUDE.md's asset inventory for the reasoning). All
+  four Our Story photos → `story-1..4.webp` (17-42% smaller each,
+  `content.js`'s `photo` fields updated). Confirmed only 5 images are
+  actually referenced/loaded by the live page — everything else in
+  `assets/images/` (several multi-MB unused iteration files) doesn't
+  affect load time regardless of size, so wasn't touched. Verified live:
+  network tab shows the new `.webp` requests returning 200/304, no
+  console errors, no visible quality loss on either the hero die-cut or
+  the Story candid photos.
+- **Investigated a user-reported "RSVP" text stuck under the header at
+  every scroll position (2026-07-19)** — confirmed via `getBoundingClient-
+  Rect()` on every DOM element at the exact scroll position shown that no
+  such element exists anywhere near the viewport top; a screenshot taken
+  at that same instant still showed the phantom text. This is the Browser
+  preview pane's known screenshot-compositing glitch (see the new
+  permanent gotcha note added to CLAUDE.md, right before the Design
+  System section) — not a real site bug. No code change made.
 
 ## In progress / next up
 
+- [ ] **Regrade or redesign `story-4.jpg`** (the "Coming Soon" graphic for
+      the 2027 Our Wedding milestone) — it was designed against the old
+      rust/maroon scrapbook palette and now visually clashes with the new
+      Petal Blush rose palette (2026-07-19 pivot, see Done). Lowest-effort
+      fix: run it through the existing warm-grade recipe with rose-shifted
+      parameters; bigger option: a fresh graphic in the new palette.
 - [ ] **Get the user's reaction to the illustration micro-motif mockup**
       (built 2026-07-17, link in that session's HANDOFF.md — heart/sprig
       ornament for FAQ/Guestbook at caption scale) — still not confirmed,
-      tweaked, or rejected. Note: the "more is coming" notes above were
+      tweaked, or rejected. **Likely stale now**: this was scoped against
+      the old scrapbook palette/illustration rules before the 2026-07-19
+      Petal Blush pivot — re-confirm the illustration-scope decision still
+      holds under the new palette before reviving this, rather than
+      assuming it does. Note: the "more is coming" notes above were
       spec'd to be independent of this motif (don't wait on it), but if
       the heart motif is later confirmed, its natural home is right next
       to the FAQ closing note / footer line (see that design-lead spec's

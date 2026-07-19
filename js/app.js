@@ -15,13 +15,12 @@ const App = (() => {
       .map(
         (milestone, index) => `
         <article class="timeline-item" role="listitem" aria-label="${milestone.year}: ${milestone.title}">
-          <div class="timeline-item__marker" aria-hidden="true">
-            <span class="timeline-item__year">${milestone.year}</span>
-          </div>
           <div class="timeline-item__photo">
             <img src="${milestone.photo}" alt="${milestone.photoAlt}" loading="lazy" width="480" height="360" />
           </div>
           <div class="timeline-item__copy">
+            <span class="timeline-item__year" aria-hidden="true">${milestone.year}</span>
+            <p class="timeline-item__label">${milestone.label}</p>
             <h3>${milestone.title}</h3>
             <p>${milestone.description}</p>
           </div>
@@ -36,8 +35,8 @@ const App = (() => {
 
     grid.innerHTML = WEDDING_CONTENT.events
       .map((event) => {
-        const datetime =
-          event.date === 'TBD' && event.time === 'TBD' ? 'TBD' : `${event.date} &middot; ${event.time}`;
+        const isTbdDatetime = event.date === 'TBD' && event.time === 'TBD';
+        const datetime = isTbdDatetime ? 'TBD' : `${event.date} &middot; ${event.time}`;
         const mapLink = event.mapUrl
           ? `<a class="btn btn--outline" href="${event.mapUrl}" target="_blank" rel="noopener noreferrer"
                aria-label="Open ${event.name} venue in Google Maps">
@@ -46,22 +45,21 @@ const App = (() => {
           : '';
         return `
         <article class="event-card" data-reveal aria-labelledby="event-${event.id}-name">
-          <div class="event-card__header">
-            <h3 id="event-${event.id}-name">${event.name}</h3>
-            <p class="event-card__datetime">${datetime}</p>
+          <div class="event-card__body">
+            <div class="event-card__header">
+              <h3 id="event-${event.id}-name">${event.name}</h3>
+              <span class="event-card__badge${event.dressCode === 'TBD' ? ' is-tbd' : ''}">${event.dressCode}</span>
+            </div>
+            <p class="event-card__datetime${isTbdDatetime ? ' is-tbd' : ''}">${datetime}</p>
+            <dl class="event-card__details">
+              <div>
+                <dt>Venue</dt>
+                <dd${event.venue === 'TBD' ? ' class="is-tbd"' : ''}>${event.venue}</dd>
+              </div>
+            </dl>
+            <p class="event-card__quote">&ldquo;${event.description}&rdquo;</p>
+            ${mapLink}
           </div>
-          <p class="event-card__description">${event.description}</p>
-          <dl class="event-card__details">
-            <div>
-              <dt>Venue</dt>
-              <dd>${event.venue}</dd>
-            </div>
-            <div>
-              <dt>Dress code</dt>
-              <dd>${event.dressCode}</dd>
-            </div>
-          </dl>
-          ${mapLink}
         </article>`;
       })
       .join('');
@@ -179,6 +177,9 @@ const App = (() => {
     Utils.qsa('[data-couple-names]').forEach((el) => {
       el.textContent = `${WEDDING_CONTENT.couple.partner1} & ${WEDDING_CONTENT.couple.partner2}`;
     });
+    Utils.qsa('[data-couple-initials]').forEach((el) => {
+      el.textContent = `${WEDDING_CONTENT.couple.partner1.charAt(0)} & ${WEDDING_CONTENT.couple.partner2.charAt(0)}`;
+    });
     Utils.qsa('[data-wedding-date]').forEach((el) => {
       el.textContent = WEDDING_CONTENT.wedding.displayDate;
     });
@@ -191,8 +192,31 @@ const App = (() => {
     if (typeof lucide !== 'undefined') lucide.createIcons();
   };
 
+  const initCountdown = () => {
+    const container = Utils.qs('#hero-countdown');
+    if (!container) return;
+
+    const target = new Date('2027-02-24T18:00:00+05:30').getTime();
+    const daysEl = Utils.qs('[data-countdown="days"]', container);
+    const hoursEl = Utils.qs('[data-countdown="hours"]', container);
+    const minsEl = Utils.qs('[data-countdown="minutes"]', container);
+    const secsEl = Utils.qs('[data-countdown="seconds"]', container);
+
+    const update = () => {
+      const diff = Math.max(0, target - Date.now());
+      daysEl.textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
+      hoursEl.textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+      minsEl.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      secsEl.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    };
+
+    update();
+    setInterval(update, 1000);
+  };
+
   const init = async () => {
     populateStaticCopy();
+    initCountdown();
     renderStory();
     renderEvents();
     renderFaqs();
