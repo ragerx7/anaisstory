@@ -159,13 +159,30 @@
 
 .site-nav a {
   position: relative;
-  padding-block: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-md);
+  border-radius: 999px;
+  transition: color var(--duration-fast) var(--ease-editorial), background-color var(--duration-fast) var(--ease-editorial);
 }
 
-.site-nav a.is-active,
-.site-nav a:hover,
-.site-nav a:focus-visible {
+.site-nav a:hover {
   color: var(--color-accent);
+  background-color: rgba(242, 196, 206, 0.28);
+}
+
+.site-nav a.is-active {
+  color: var(--color-accent);
+}
+
+.site-nav a.is-active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0.05rem;
+  transform: translateX(-50%);
+  width: 1.5rem;
+  height: 2px;
+  border-radius: 2px;
+  background-color: var(--color-gold);
 }
 
 .site-nav__cta {
