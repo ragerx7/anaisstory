@@ -64,7 +64,7 @@ const RSVP = (() => {
           </div>
 
           <div class="field-group">
-            <label class="field-label" for="rsvp-message">Any message for the bride &amp; groom? <span class="field-optional">(optional)</span></label>
+            <label class="field-label" for="rsvp-message">Any message for us? <span class="field-optional">(optional)</span></label>
             <textarea class="field-textarea" id="rsvp-message" name="message" rows="3"
               placeholder="A blessing, a memory, a song request&hellip;">${prefill.message || ''}</textarea>
           </div>

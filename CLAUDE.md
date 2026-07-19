@@ -269,27 +269,76 @@ produced a real-looking bug, `.field-error` elements stuck visible with no
 to *every* asset tag together, every time, not just the one file that
 changed.
 
-⚠️ **The Browser preview pane's screenshot tool has a recurring
-compositing glitch, seen across multiple sessions (first flagged
-2026-07-18, most recently reproduced/confirmed 2026-07-19)**: a
-`computer {action: "screenshot"}` call can render a "ghost" element —
-text or an element from a *different* scroll position or an earlier
-page state — composited into the current screenshot at the wrong spot,
-even though it doesn't exist anywhere near the viewport in the real DOM
-at that scroll position. Confirmed 2026-07-19 by cross-checking a
-screenshot that showed a stray "RSVP" heading pinned under the sticky
-header at every scroll position (including the very top of the page)
-against `getBoundingClientRect()` on every element in the DOM at that
-exact scroll position — nothing was actually there. **The fix is the
-same one already established for CSS/JS verification: don't trust the
-screenshot alone for anything you can check programmatically.** Use
-`getComputedStyle()`/`getBoundingClientRect()` to confirm real layout
-state, and treat a screenshot as corroborating evidence, not the
-primary source of truth, especially for "is this element visible/
-positioned correctly" questions. If a user reports something that looks
-like this glitch from their own screenshot, it's worth a quick DOM check
-before assuming it's a real site bug — but don't assume it's *always*
-the glitch either; confirm each time.
+⚠️ **RETRACTED, 2026-07-19**: earlier the same day this doc claimed a
+recurring "RSVP stuck under the header" report across multiple sessions
+was a Browser-preview-pane screenshot-compositing glitch, not a real
+site bug — that diagnosis was wrong. It **is a real, reproducible CSS
+bug**, root-caused and fixed the same day; see the `.site-header::before`
+gotcha below. The original DOM check that seemed to clear it only
+checked at `scrollY: 0` before `.site-header--scrolled` had ever
+activated, which is exactly the one state the bug doesn't occur in — a
+false negative, not proof of a screenshot artifact. Given this, the
+*other* historical "compositing glitch" mentions in TODO.md
+(2026-07-18 onward) were quite possibly this same bug misdiagnosed each
+time, not a tool artifact — if something like this comes up again,
+root-cause it with `getComputedStyle()`/`getBoundingClientRect()` in the
+*actual* triggering state (scrolled, menu state, etc.) before reaching
+for "the screenshot tool glitched," which turned out to be the wrong
+default assumption here.
+
+⚠️ **`backdrop-filter` on `.site-header` broke the mobile nav's hidden
+state — fixed 2026-07-19, root cause worth knowing if this pattern comes
+up elsewhere.** `backdrop-filter` (like `transform`/`filter`/
+`will-change`) makes the element it's set on a new **containing block**
+for any `position: fixed` descendants. `.site-nav` (the mobile
+full-screen menu, `position: fixed; inset: 0`) is nested inside
+`.site-header`, and `.site-header--scrolled` had `backdrop-filter:
+blur(12px)` directly on `.site-header` itself — so once a guest scrolled
+past the 40px threshold, `.site-nav`'s `inset: 0` started resolving
+against `.site-header`'s own ~69px-tall box instead of the viewport.
+Its `translateY(-100%)` "hidden" transform then only moved it up by
+that wrongly-short height, leaving the bottom of the centered nav (the
+rose "RSVP" pill) visibly peeking out from under the header, at every
+scroll position, on every page load past the scroll threshold — this is
+what the two retracted "compositing glitch" write-ups above were
+actually seeing. **Fix**: moved the frosted-glass fill (`background-
+color`, `backdrop-filter`, `box-shadow`) off `.site-header` itself and
+onto a `.site-header::before` pseudo-element instead. A pseudo-element
+isn't a real DOM ancestor of `.site-nav`, so it can't become its
+containing block — `.site-header` stays "clean" and `.site-nav`'s fixed
+positioning resolves against the true viewport again. Verified: mobile
+nav overlay now measures the full viewport height and translates fully
+off-screen in both the pre-scroll and post-scroll (`.site-header--
+scrolled`) states; desktop nav layout and the frosted-glass visual are
+unchanged. **The general lesson**: any future `backdrop-filter`/
+`filter`/`transform` added to an element that contains a `position:
+fixed` descendant needs the same pseudo-element (or DOM-sibling)
+treatment — putting it directly on the ancestor will silently break
+that descendant's fixed positioning the same way.
+
+⚠️ **A second, compounding bug, found and fixed the same day (2026-07-19)
+while verifying the fix above on mobile**: the hero's atmospheric blur
+"blobs" (`.hero::before`/`::after`) are deliberately positioned with
+negative offsets (`left: -8%`, `right: -10%`) to bleed off the section's
+edge for atmosphere, but `.hero` had no `overflow: hidden` to contain
+that bleed. Result: real, measurable horizontal page overflow — 38px at
+a 375px viewport (confirmed via `documentElement.scrollWidth` 413 vs
+`clientWidth` 375). `body` already had `overflow-x: hidden` (see the
+reset rules near the top of `style.css`), but that alone doesn't
+reliably stop document-level horizontal overflow — `html` is the
+element that actually controls it in most engines, and `html` had no
+overflow rule at all. Because `.site-header` is `position: fixed`, its
+containing block picked up that overflowed width too, so the header
+rendered ~38px wider than the true viewport — which is what made the
+logo/nav look shifted/doubled in screenshots at every scroll position,
+not just near the hero. **Two-part fix**: added `overflow: hidden` to
+`.hero` itself (contains the actual bleed at its source) and
+`overflow-x: hidden` to `html` (global safety net, matching the existing
+`body` rule, so any *future* bleeding decorative element doesn't
+reintroduce this class of bug). Verified post-fix at 375px:
+`documentElement.scrollWidth` now equals `clientWidth` exactly (375),
+`.site-header` measures the correct 375px, hero photo/shadow/gradient
+render unclipped, desktop layout unaffected.
 
 ## Design system — current direction: "Petal Blush" (romantic rose/gold)
 

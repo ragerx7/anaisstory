@@ -550,14 +550,44 @@ the start of every session.
   network tab shows the new `.webp` requests returning 200/304, no
   console errors, no visible quality loss on either the hero die-cut or
   the Story candid photos.
-- **Investigated a user-reported "RSVP" text stuck under the header at
-  every scroll position (2026-07-19)** — confirmed via `getBoundingClient-
-  Rect()` on every DOM element at the exact scroll position shown that no
-  such element exists anywhere near the viewport top; a screenshot taken
-  at that same instant still showed the phantom text. This is the Browser
-  preview pane's known screenshot-compositing glitch (see the new
-  permanent gotcha note added to CLAUDE.md, right before the Design
-  System section) — not a real site bug. No code change made.
+- **Fixed a real bug (2026-07-19), `?v=18`: the mobile nav's "RSVP" pill
+  was stuck permanently visible, peeking out under the sticky header at
+  every scroll position, once the guest scrolled past the frosted-glass
+  threshold.** First misdiagnosed as a Browser-preview-pane screenshot
+  glitch (a DOM check at `scrollY: 0`, before `.site-header--scrolled`
+  had ever activated, came back clean — a false negative from checking
+  the one state the bug doesn't occur in). The user pushed back with a
+  second screenshot at a different scroll position, prompting a proper
+  re-investigation that found the real cause: `backdrop-filter` on
+  `.site-header--scrolled` was making `.site-header` a new containing
+  block for its `position: fixed` child `.site-nav` (the mobile
+  full-screen menu), so `.site-nav`'s `inset: 0` resolved against the
+  header's own ~69px height instead of the viewport — its
+  `translateY(-100%)` hidden-state transform then only moved it up by
+  that wrongly-short height, leaving the nav's contents (centered via
+  flex) partially exposed. Fixed by moving the frosted-glass fill onto a
+  `.site-header::before` pseudo-element instead of the header itself
+  (see CLAUDE.md's gotcha for the full explanation and the general
+  pattern to watch for elsewhere). Verified via `getComputedStyle`/
+  `getBoundingClientRect` in the actual triggering state this time (post-
+  scroll, `.site-header--scrolled` active) at the same ~480-528px
+  viewport the user's screenshot showed: nav height now correctly fills
+  the viewport and translates fully off-screen. Also verified the mobile
+  menu still opens/closes correctly and the desktop nav pill + frosted
+  glass are visually unchanged.
+- **Fixed a second, compounding bug found the same day (2026-07-19),
+  `?v=19`: real 38px horizontal page overflow at mobile widths**, caused
+  by the hero's atmospheric blur blobs (`.hero::before`/`::after`)
+  bleeding past the section edge with nothing to contain them. This was
+  making `position: fixed` elements (the header) size against the
+  overflowed document width instead of the true viewport — the actual
+  cause of the shifted/doubled-looking logo the user flagged in a
+  screenshot, on top of the RSVP-pill bug above. Fixed by adding
+  `overflow: hidden` to `.hero` (contains the bleed at its source) and
+  `overflow-x: hidden` to `html` (global safety net). Verified at 375px:
+  `documentElement.scrollWidth` now exactly equals `clientWidth`, header
+  measures correctly, hero visuals unclipped, desktop unaffected. See
+  CLAUDE.md's gotcha for the full writeup.
 
 ## In progress / next up
 

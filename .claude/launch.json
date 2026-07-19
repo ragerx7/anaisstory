@@ -8,6 +8,12 @@
       "port": 4173
     },
     {
+      "name": "wedding-static-server-alt",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4174"],
+      "port": 4174
+    },
+    {
       "name": "figma-reference-site",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "/Users/anubhavgaba/Downloads/Wedding Website Color Palette-2", "run", "dev"],

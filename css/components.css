@@ -84,11 +84,33 @@
   top: 0;
   z-index: 100;
   padding-block: var(--space-md);
-  transition: padding var(--duration-base) var(--ease-editorial), background-color var(--duration-base) var(--ease-editorial), box-shadow var(--duration-base) var(--ease-editorial);
+  transition: padding var(--duration-base) var(--ease-editorial);
+}
+
+/* The frosted-glass fill lives on a pseudo-element, not on .site-header
+   itself. backdrop-filter (like transform/filter) makes the element it's
+   set on a new containing block for any position:fixed descendants — and
+   .site-nav (the mobile full-screen menu) is exactly that, nested inside
+   this header. With backdrop-filter on .site-header directly, .site-nav's
+   `inset: 0` resolved against the ~69px-tall header instead of the
+   viewport, so its translateY(-100%) hidden state only moved it up by its
+   own (wrongly short) height — leaving the RSVP pill peeking out under the
+   header at every scroll position once .site-header--scrolled was active.
+   A ::before pseudo-element is not a real DOM ancestor of .site-nav, so
+   putting the blur there sidesteps the containing-block quirk entirely. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transition: background-color var(--duration-base) var(--ease-editorial), box-shadow var(--duration-base) var(--ease-editorial);
 }
 
 .site-header--scrolled {
   padding-block: var(--space-xs);
+}
+
+.site-header--scrolled::before {
   background-color: rgba(255, 248, 244, 0.82);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -170,6 +192,14 @@ body.nav-open {
   text-align: center;
   padding: 6rem var(--section-padding-inline) 4rem;
   background: linear-gradient(170deg, var(--color-bg) 0%, rgba(242, 196, 206, 0.33) 50%, var(--color-bg) 100%);
+  /* .hero::before/::after (the atmospheric blur blobs) are deliberately
+     positioned with negative left/right offsets to bleed off the section's
+     edge. Without clipping, that bleed extends past the true viewport
+     width and creates real horizontal page overflow (measured: 38px at a
+     375px viewport) — position:fixed elements elsewhere on the page (the
+     header) then size against that wider overflowed document instead of
+     the viewport. Keep this. */
+  overflow: hidden;
 }
 
 .hero::before {
