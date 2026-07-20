@@ -226,6 +226,11 @@ p {
   margin-bottom: var(--space-2xl);
 }
 
+.section-heading h2 {
+  font-family: var(--font-script);
+  color: var(--color-accent);
+}
+
 .section-heading p {
   margin-top: var(--space-sm);
   font-size: var(--fs-body-lg);

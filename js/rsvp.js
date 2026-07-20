@@ -59,7 +59,7 @@ const RSVP = (() => {
           </div>
 
           <div class="field-group guest-count-group" id="field-arrival">
-            <label class="field-label" for="rsvp-arrival">When do you think you&rsquo;ll arrive? <span class="field-optional">(optional)</span></label>
+            <label class="field-label" for="rsvp-arrival">When can we expect to welcome you? <span class="field-optional">(optional)</span></label>
             <input class="field-input" id="rsvp-arrival" name="arrivalPlan" type="text" autocomplete="off"
               placeholder="e.g. Feb 22 evening &mdash; or &ldquo;not sure yet&rdquo;"
               value="${prefill.arrivalPlan || ''}" />

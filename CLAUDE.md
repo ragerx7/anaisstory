@@ -519,6 +519,94 @@ Current palette/tokens (in `css/style.css` `:root`):
   fixed a factual inconsistency this surfaced: Mehendi's description
   said "an evening of celebration" while the actual function is a
   morning one — corrected to "a morning of celebration."
+- **Header logo (`.site-logo`) switched from script to serif, 2026-07-20**
+  — the user flagged the "N & A" header wordmark as illegible, and it was:
+  Pinyon Script (`--font-script`) depends on a run of joined letters and
+  word context to read cleanly, and three isolated glyphs ("N", "&", "A")
+  with no such context made the ampersand's loops blur into the adjacent
+  caps at any header-appropriate size — this isn't a pixel-size problem,
+  it's structural to using a connecting script face for a short
+  abbreviation. Switched to `--font-heading` (Playfair Display, already
+  the site's heading voice) at `1.375rem`/500 weight/`0.08em`
+  letter-spacing/`line-height: 1`, plus a `color-deep` hover/focus state.
+  Content stays literal `N & A` (keep the spaces around the ampersand —
+  combined with the tracking they're what makes it read as a deliberate
+  mark rather than a clump). This deliberately diverges from the hero H1
+  and footer signature, which correctly keep Pinyon Script — those are
+  full-name display moments at true display scale where a connecting
+  script has the context to work; the header logo is a small
+  always-visible nav anchor optimizing for instant recognition, a
+  different job. Verified: weight 500 was already in the Google Fonts
+  `@import` (no font-load change needed); logo measures perfectly
+  vertically centered in both the tall (~93px) and scrolled/frosted
+  (~62px) header states despite Playfair's different vertical metrics
+  from Pinyon Script.
+- **Invitation card copy + RSVP arrival label, several revisions,
+  2026-07-20 — current final state.** The card went through three passes
+  the same day before landing: first only `.invitation-card__line`
+  changed ("come celebrate the start of our forever" → "we'd love
+  nothing more than to have you there"), keeping "You're Invited" and
+  "Together with their families". Second pass fixed a real voice bug the
+  user caught — the site is written in first person throughout (hero
+  "We're Getting Married", footer "our friends and family", RSVP success
+  "we can't wait to celebrate with you"), but the eyebrow said "**their**
+  families," a third-person slip. Third pass, the user supplied the
+  entire card's final copy directly, superseding both prior passes:
+  - `.invitation-card__eyebrow`: **"A little note from us"**
+  - `.invitation-card__title` (h2): **"We'd Love You to Be There"**
+  - `.invitation-card__line`: **"Because celebrations are better with
+    the people we love."**
+
+  This does reverse the earlier design-lead read that "You're Invited"
+  was the strongest possible heading and shouldn't move — that call was
+  correct *given* the second-person-address convention, but the user's
+  explicit priority (first-person voice, consistent with the rest of the
+  site) outranks it, and "We'd Love You to Be There" satisfies both (first
+  person *and* still addressed to the guest). Don't revert to "You're
+  Invited" thinking it's restoring a better version — this was a
+  deliberate, direct, final instruction. The longer heading wraps to two
+  lines within the card's 440px max-width/2.5rem padding, which reads
+  fine (still one placard utterance, not two) — verified at both desktop
+  and 375px mobile width, no CSS changes were needed.
+
+  Separately, the RSVP arrival-plan field label went through its own two
+  revisions the same day: "When do you think you'll arrive?" → "When are
+  you hoping to arrive?" → **current final copy: "When can we expect to
+  welcome you?"** (user's explicit direction), which frames the field as
+  the couple anticipating the guest rather than asking the guest to
+  report their plans.
+
+  General pattern worth remembering for future copy requests on this
+  site: check whether the flagged phrase is actually the problem, or
+  whether the issue is in an adjacent line (the first `.invitation-card__
+  line` pass fixed the wrong line's tone, not wrong exactly, but the
+  eyebrow bug was the more substantive catch) — diagnose the specific
+  voice/person issue before rewriting. And when a design-lead
+  recommendation and a later, more specific explicit user instruction
+  conflict, the explicit instruction wins — design-lead specs are a
+  starting point for engineering judgment calls, not a lock against the
+  user's own direct, final word.
+- **Section headers simplified to one label + restyled to match the hero
+  name, 2026-07-20.** Story/Events/RSVP used to stack a small script
+  eyebrow above a separate Playfair `<h2>` (e.g. "Our Journey" +
+  "Our Story") — flagged as redundant. Removed the eyebrow `<span>` from
+  all three, keeping one `<h2>` each: Story → "Our Story", Events →
+  "Events", **RSVP → "Save us the honour"** (the eyebrow's text became
+  the heading; "RSVP" was dropped deliberately since it already appears
+  in the nav link and hero CTA — "Save us the honour" was the more
+  distinctive phrase worth being this section's one label). The
+  `id`/`aria-labelledby` pairing was preserved on the surviving `<h2>`
+  in each case, not left dangling. Same day, added `.section-heading h2
+  { font-family: var(--font-script); color: var(--color-accent); }` to
+  `style.css` — these three headings now render in Pinyon Script/rose
+  like "Naisargi & Anubhav" in the hero, instead of plain Playfair
+  brown. Scoped to `.section-heading h2` only, so the Invitation card's
+  heading (`.invitation-card__title`, a different class) is unaffected.
+  This also silently applies to the still-hidden Gallery/Memories/
+  Guestbook/FAQ sections, which share the same template — dormant until
+  those return, no action needed then. Also updated Events' subtitle:
+  "Everything you need to join us for each celebration." → "...We
+  cannot wait to share these moments with you."
 - Accent motifs (thread lines + heart SVG) that used to be the hero's
   signature "one bold moment" remain **retired** — the hero still leans on
   the single finished focal photo asset (see Architecture patterns / Hero

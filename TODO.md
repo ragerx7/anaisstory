@@ -632,6 +632,68 @@ the start of every session.
   couple's live production Sheet, not a test one) — confirmed
   `arrivalPlan` lands correctly in the captured payload without writing
   a test row to their real spreadsheet. No console errors.
+- **Header logo legibility fix (2026-07-20, same session), `?v=25`**: the
+  "N & A" header wordmark switched from Pinyon Script to Playfair Display
+  (500 weight, 0.08em tracking) after the user flagged it as unreadable —
+  design-lead's diagnosis was that script faces need a run of letters/word
+  context to read cleanly, which three isolated glyphs never had regardless
+  of size. See CLAUDE.md's Design System section for the full spec and
+  reasoning. Verified live via computed styles (screenshot tool hit its
+  known glitch again mid-verification, see CLAUDE.md's earlier gotcha) —
+  correct font/weight/size/tracking/color applied, weight 500 confirmed
+  already loaded (no font-import change needed), logo measured perfectly
+  vertically centered in both header states. No console errors.
+- **Copy warmth pass (2026-07-20, same session), `?v=26`**: Invitation
+  card's italic line → "we'd love nothing more than to have you there"
+  (the heading "You're Invited" was diagnosed as already fine and left
+  unchanged — see CLAUDE.md's Design System section for the reasoning).
+  RSVP arrival-field label → "When are you hoping to arrive?" Verified
+  live, no console errors.
+- **RSVP arrival-field label revised again (2026-07-20, same session),
+  `?v=27`**: "When are you hoping to arrive?" → final copy "When can we
+  expect to welcome you?" at the user's direct request. Verified live.
+- **Invitation card fully rewritten, final copy (2026-07-20, same
+  session), `?v=28`**: caught a real voice bug first — "Together with
+  their families" was third-person, inconsistent with the first-person
+  voice used everywhere else on the site (hero, footer, RSVP success) —
+  fixed to "our families". Then the user supplied the entire card's
+  final copy directly, superseding that fix and the earlier "keep
+  'You're Invited'" call: eyebrow → "A little note from us", heading →
+  "We'd Love You to Be There", line → "Because celebrations are better
+  with the people we love." See CLAUDE.md's Design System section — this
+  is now the settled final state, don't revert toward "You're Invited".
+  Verified live at desktop and 375px mobile width: the longer heading
+  wraps cleanly to two lines with no CSS changes needed, no console
+  errors.
+- **Section headers simplified to one label each (2026-07-20, same
+  session), `?v=29`**: Story/Events/RSVP each used to stack a small
+  script eyebrow ("Our Journey"/"Schedule"/"Save us the honour") above a
+  separate Playfair `<h2>` ("Our Story"/"Events"/"RSVP") — the user
+  flagged this as redundant. Removed the eyebrow `<span>` from all
+  three and kept a single `<h2>`; for Story/Events that heading is the
+  existing plain-word text, but for RSVP the *eyebrow's* text became the
+  heading ("Save us the honour") and "RSVP" was dropped — deliberate,
+  since "RSVP" already appears in the nav link and hero CTA button,
+  while "Save us the honour" was the more distinctive phrase worth
+  keeping as this section's one label. The `id`/`aria-labelledby`
+  wiring was preserved (moved the id onto the surviving `<h2>`, not
+  left dangling), so the section landmark accessibility is unchanged.
+  Also updated Events' subtitle copy: "Everything you need to join us
+  for each celebration." → "...We cannot wait to share these moments
+  with you."
+- **Section headings restyled to match the hero name (2026-07-20, same
+  session), `?v=30`**: added `.section-heading h2 { font-family:
+  var(--font-script); color: var(--color-accent); }` in `style.css` —
+  "Our Story," "Events," and "Save us the honour" now render in Pinyon
+  Script/rose, matching "Naisargi & Anubhav" in the hero, instead of
+  plain Playfair Display brown. Scoped to `.section-heading h2`
+  specifically, so it doesn't touch the Invitation card's heading
+  (different class, `.invitation-card__title`) or other h2/h3s
+  elsewhere. This also affects the still-hidden Gallery/Memories/
+  Guestbook/FAQ sections' headings (they share the same `.section-
+  heading` template) — dormant for now, will apply automatically
+  whenever those sections are un-commented. Verified live, no console
+  errors.
 
 - [ ] **Regrade or redesign `story-4.jpg`** (the "Coming Soon" graphic for
       the 2027 Our Wedding milestone) — it was designed against the old
