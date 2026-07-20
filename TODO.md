@@ -588,8 +588,50 @@ the start of every session.
   `documentElement.scrollWidth` now exactly equals `clientWidth`, header
   measures correctly, hero visuals unclipped, desktop unaffected. See
   CLAUDE.md's gotcha for the full writeup.
-
-## In progress / next up
+- **Real event dates added (2026-07-20), `?v=22`**: Mehendi & Sangeet →
+  February 23, 2027; Haldi & Wedding → February 24, 2027, in `content.js`.
+  Time/venue/dress-code stay `TBD` for all four. `renderEvents()` in
+  `js/app.js` reworked to handle the new mixed known-date/unknown-time
+  state cleanly (was previously all-or-nothing) and the displayed
+  "TBD" text was upgraded to "To be announced" everywhere guests see it
+  (data value is still the `'TBD'` sentinel underneath — only the display
+  text changed, so existing conditionals are untouched). See CLAUDE.md's
+  Design System section for the full writeup. Verified live: all four
+  cards read "February 2[3/4], 2027 · time to be announced", dress-code
+  badge and venue both say "To be announced", no console errors. Hit and
+  worked around the documented caching gotcha mid-verification — the
+  Browser preview tab kept serving the previous `?v=21` `index.html`
+  document even after a `navigate` reload; a cache-busted URL
+  (`?nocache=1`) forced a real fetch. Not a new bug, just a reminder the
+  existing gotcha applies to verification, not just to real guests.
+- **Event names finalized + time-of-day added (2026-07-20, same session),
+  `?v=23`**: "Sangeet & Cocktails" → "Sangeet Night", "Haldi" → "Haldi
+  Holi", "Wedding" → "The Wedding". New `timeOfDay` field per event
+  ('Morning': Mehendi/Haldi, 'Night': Sangeet/Wedding) now renders
+  alongside the date even while the exact clock time is still `TBD` —
+  e.g. "February 23, 2027 · Morning — exact time to be announced". Also
+  fixed Mehendi's description, which said "evening" despite Mehendi
+  being a morning function. See CLAUDE.md's Design System section.
+  Verified live, no console errors.
+- **RSVP additions implemented (2026-07-20, same session), `?v=24`**: the
+  hero CTA caption mockup, new optional "arrival plan" field, and
+  stay-reassurance note proposed and confirmed earlier this session are
+  now live. Hero caption → "We can't wait to celebrate with you." New
+  field + note sit right after the guest-count stepper in `js/rsvp.js`,
+  collapse/reveal together with it when attending flips to "no" (all
+  three share `.guest-count-group` + a new `yesOnlyGroups` toggle array).
+  `arrivalPlan` flows into the submit payload and the Google Sheet POST;
+  `scripts/google-apps-script/Code.gs` updated to add an "Arrival Plan"
+  column — **the couple needs to manually redeploy that script** for
+  their live Sheet to actually start receiving it (see CLAUDE.md's
+  Architecture patterns section for why). Verified live end-to-end: form
+  fills correctly, both new elements collapse/expand with the stepper on
+  attend toggle, Lucide `bed-double` icon renders. Submission was tested
+  by intercepting `fetch` rather than actually calling the real Google
+  Apps Script endpoint (`content.js`'s `rsvpEndpoint` points at the
+  couple's live production Sheet, not a test one) — confirmed
+  `arrivalPlan` lands correctly in the captured payload without writing
+  a test row to their real spreadsheet. No console errors.
 
 - [ ] **Regrade or redesign `story-4.jpg`** (the "Coming Soon" graphic for
       the 2027 Our Wedding milestone) — it was designed against the old
@@ -764,12 +806,15 @@ the start of every session.
   section below** — its whole premise is that these sections are still
   hidden; it should shrink or retire as they return, not stay put
   unchanged.
-- **Venue names/addresses/dress codes/dates/times** for each event: now
-  explicitly `TBD` in `content.js` (updated 2026-07-18, genuinely unknown,
-  not generic placeholder text) — real event list and order confirmed as
-  Mehendi → Sangeet & Cocktails → Haldi → Wedding (Reception dropped). Fill
-  in as details are confirmed; each field renders as-is once it's no
-  longer `TBD`/`null`.
+- **Venue names/addresses/dress codes/times** for each event: still
+  explicitly `TBD` in `content.js` (dates resolved 2026-07-20, see Done —
+  Mehendi/Sangeet: Feb 23 2027, Haldi/Wedding: Feb 24 2027; time, venue,
+  dress code remain genuinely unknown, not generic placeholder text).
+  Real event list and order confirmed as Mehendi → Sangeet & Cocktails →
+  Haldi → Wedding (Reception dropped). Fill in as details are confirmed;
+  each field renders as-is once it's no longer `TBD`/`null` — see
+  CLAUDE.md's `renderEvents()` gotcha for how the partial-known
+  (date-but-not-time) case in particular is handled.
 - ~~**Our Story milestones**~~ — **fully resolved 2026-07-18.** All four
   now use the couple's real timeline and real images (see Done): Meeting
   Each Other (2024, real photo), Officially Started Dating (2025, real

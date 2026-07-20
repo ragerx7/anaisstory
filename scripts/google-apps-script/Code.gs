@@ -11,7 +11,7 @@
 // This is a spam deterrent, not real security — see SETUP.md's security note.
 const SHARED_SECRET = 'SEe48vQzOm2kdo7fKxpEEqhW';
 
-const HEADERS = ['Timestamp', 'Guest ID', 'Name', 'Attending', 'Guest Count', 'Phone', 'Message'];
+const HEADERS = ['Timestamp', 'Guest ID', 'Name', 'Attending', 'Guest Count', 'Arrival Plan', 'Phone', 'Message'];
 
 function doPost(e) {
   try {
@@ -33,6 +33,7 @@ function doPost(e) {
       sanitizeForSheet(data.name),
       data.attending ? 'Yes' : 'No',
       data.attending ? data.guests || 1 : '',
+      sanitizeForSheet(data.arrivalPlan || ''),
       sanitizeForSheet(data.phone || ''),
       sanitizeForSheet(data.message || ''),
     ]);

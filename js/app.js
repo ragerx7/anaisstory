@@ -33,10 +33,33 @@ const App = (() => {
     const grid = Utils.qs('#events-grid');
     if (!grid) return;
 
+    // A bare 'TBD' reads fine as a standalone label (the dress-code badge,
+    // the venue value) but not stitched into a sentence next to a real
+    // date ("February 23, 2027 · TBD") — so the datetime line spells out
+    // "time to be announced" instead, and everywhere else displays the
+    // friendlier "To be announced" rather than the raw sentinel value.
+    const revealLabel = (value) => (value === 'TBD' ? 'To be announced' : value);
+
     grid.innerHTML = WEDDING_CONTENT.events
       .map((event) => {
-        const isTbdDatetime = event.date === 'TBD' && event.time === 'TBD';
-        const datetime = isTbdDatetime ? 'TBD' : `${event.date} &middot; ${event.time}`;
+        const dateKnown = event.date !== 'TBD';
+        const timeKnown = event.time !== 'TBD';
+        let datetime;
+        if (dateKnown && timeKnown) {
+          datetime = `${event.date} &middot; ${event.time}`;
+        } else if (dateKnown && event.timeOfDay) {
+          // Exact clock time isn't set yet, but which part of the day is
+          // already known (Mehendi/Haldi mornings, Sangeet/Wedding nights)
+          // — surface that now instead of a flat "time to be announced",
+          // and keep only the still-genuinely-unknown part muted.
+          datetime = `${event.date} &middot; ${event.timeOfDay} <span class="is-tbd">&mdash; exact time to be announced</span>`;
+        } else if (dateKnown) {
+          datetime = `${event.date} &middot; <span class="is-tbd">time to be announced</span>`;
+        } else if (timeKnown) {
+          datetime = `<span class="is-tbd">date to be announced</span> &middot; ${event.time}`;
+        } else {
+          datetime = '<span class="is-tbd">To be announced</span>';
+        }
         const mapLink = event.mapUrl
           ? `<a class="btn btn--outline" href="${event.mapUrl}" target="_blank" rel="noopener noreferrer"
                aria-label="Open ${event.name} venue in Google Maps">
@@ -48,13 +71,13 @@ const App = (() => {
           <div class="event-card__body">
             <div class="event-card__header">
               <h3 id="event-${event.id}-name">${event.name}</h3>
-              <span class="event-card__badge${event.dressCode === 'TBD' ? ' is-tbd' : ''}">${event.dressCode}</span>
+              <span class="event-card__badge${event.dressCode === 'TBD' ? ' is-tbd' : ''}">${revealLabel(event.dressCode)}</span>
             </div>
-            <p class="event-card__datetime${isTbdDatetime ? ' is-tbd' : ''}">${datetime}</p>
+            <p class="event-card__datetime">${datetime}</p>
             <dl class="event-card__details">
               <div>
                 <dt>Venue</dt>
-                <dd${event.venue === 'TBD' ? ' class="is-tbd"' : ''}>${event.venue}</dd>
+                <dd${event.venue === 'TBD' ? ' class="is-tbd"' : ''}>${revealLabel(event.venue)}</dd>
               </div>
             </dl>
             <p class="event-card__quote">&ldquo;${event.description}&rdquo;</p>

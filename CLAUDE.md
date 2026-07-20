@@ -147,6 +147,35 @@ in the payload as a spam deterrent — **not real security**, since anything
 in this site's client-side JS is publicly readable; don't treat the sheet
 as access-controlled.
 
+**RSVP form gained an `arrivalPlan` field + a stay-reassurance note,
+2026-07-20** (a deliberate, user-requested reopening of the "RSVP form
+fields stay exactly as they were" lock recorded in the Design System
+section below — see that note for why the lock existed in the first
+place; this is a scoped, explicit exception to it, not a reversal).
+`js/rsvp.js`: a new optional free-text input ("When do you think you'll
+arrive?", id `rsvp-arrival`) sits directly after the guest-count stepper,
+followed by a quiet `.rsvp-stay-note` aside ("Coming from out of town?
+Your stay is taken care of — we'll share the details soon.", Lucide
+`bed-double` icon). Both are wrapped in the same `.guest-count-group`
+class as the stepper and collapse/reveal together via a new
+`yesOnlyGroups` array in `wireForm()` — before this, only the stepper
+had that behavior; now the toggle logic loops over all three so a
+future fourth "yes-only" field just needs to join the array. The field
+is deliberately plain text, not a date picker — the value is explicitly
+tentative, and a real date control would misrepresent a soft signal as
+a hard one. `arrivalPlan` flows into the submit payload the same way
+every other field does, which means it also flows into the Google Sheet
+POST via `MockAPI.submitRSVP` — **but `Code.gs` (the receiving Apps
+Script) needed a matching update** (added `'Arrival Plan'` to `HEADERS`
+and the `appendRow` call, positioned between Guest Count and Phone) and
+that file only runs after the couple manually redeploys it in
+script.google.com — a code change here does **not** ship itself the way
+the rest of the site does. Flag this to the user explicitly whenever
+`Code.gs` changes: the live Sheet won't get the new column until they
+redeploy. New submissions before that redeploy will still work (Apps
+Script ignores unmapped payload keys) — they just silently won't be
+captured in the sheet, so tell the user before they rely on it.
+
 **Guest personalization**: reads `?guest=<id>` from the URL, looks up
 `WEDDING_CONTENT.guests` in `content.js`, and populates `[data-guest-name]`
 elements + `window.currentGuest`. This is the stand-in for real invite tokens.
@@ -423,10 +452,18 @@ Current palette/tokens (in `css/style.css` `:root`):
   typeface, not a true bold cut.
 - **Hero CTA copy + a new caption, 2026-07-19**: the button changed from
   "Celebrate With Us" to a plain "RSVP", with a new small italic line,
-  `.hero__cta-caption` ("Let us know you'll be there"), underneath it to
-  recover the warmth the longer button copy used to carry. Styled after
-  the same "warm italic Playfair aside" voice as `.invitation-card__line`.
-  Wired into the hero load-in sequence per the gotcha above.
+  `.hero__cta-caption`, underneath it to recover the warmth the longer
+  button copy used to carry. Styled after the same "warm italic Playfair
+  aside" voice as `.invitation-card__line`. Wired into the hero load-in
+  sequence per the gotcha above. **Copy corrected 2026-07-20**: the
+  original line, "Let us know you'll be there," read as an instruction
+  aimed at the guest (a task, not a welcome) and the user flagged it as
+  rude. Replaced with **"We can't wait to celebrate with you."** —
+  expresses the couple's own feeling instead of directing the guest's
+  action, and happens to already match the existing voice of the RSVP
+  success message in `js/rsvp.js` ("We can't wait to celebrate with you,
+  {name}..."), so the two now reinforce each other rather than
+  coincidentally overlapping.
 - **Event card "TBD" consistency fix, 2026-07-19**: the literal string
   `TBD` was rendering three different ways in the same card (the dress-code
   badge in mauve, the datetime line in bold rose, the venue value in bold
@@ -439,6 +476,49 @@ Current palette/tokens (in `css/style.css` `:root`):
   element automatically reverts to its original distinct styling (bold
   rose datetime, bold brown venue, mauve badge) — no follow-up code change
   needed when the real details land.
+- **Real event dates landed, 2026-07-20** — the first real details to
+  replace a `TBD`, and the first case the "no follow-up needed" claim
+  above didn't fully hold: `content.js`'s four events now have real
+  `date` values (Mehendi & Sangeet: February 23, 2027; Haldi & Wedding:
+  February 24, 2027), while `time`, `venue`, and `dressCode` all stay
+  `'TBD'` — still genuinely unknown. This created a **partial** TBD state
+  the original all-or-nothing `isTbdDatetime` check couldn't express: it
+  only knew "both date and time are TBD" vs. "neither is," so a known
+  date next to an unknown time would have rendered as the confusing
+  literal string "February 23, 2027 · TBD". `renderEvents()` now branches
+  on `dateKnown`/`timeKnown` independently and wraps only the *unknown*
+  half in an inline `<span class="is-tbd">time to be announced</span>`
+  (lowercase, reads as a continuation of the date rather than a shout);
+  the CSS rule that used to target `.event-card__datetime.is-tbd` as a
+  compound class on the whole `<p>` was changed to the descendant
+  selector `.event-card__datetime .is-tbd` so it reaches that inner span
+  instead. Separately, the raw `'TBD'` sentinel shown to guests for the
+  dress-code badge and venue was upgraded to the friendlier "To be
+  announced" via a `revealLabel()` display-mapping helper in
+  `renderEvents()` — the underlying data value is still the bare string
+  `'TBD'` (so the `=== 'TBD'` conditionals driving `.is-tbd` still work
+  unchanged), only what's *displayed* to guests changed. When time/venue/
+  dress-code eventually get real values too, no further code change is
+  needed — same self-cleaning behavior as before, just now correct for
+  mixed known/unknown states too.
+- **Event names finalized + time-of-day added, same day (2026-07-20)**:
+  `content.js` event names are now Mehendi, **Sangeet Night** (was
+  "Sangeet & Cocktails"), **Haldi Holi** (was "Haldi"), and **The
+  Wedding** (was "Wedding"). Also added a new `timeOfDay` field
+  (`'Morning'` for Mehendi/Haldi, `'Night'` for Sangeet/Wedding) — the
+  couple knows which half of the day each function falls in well before
+  they'll have an exact clock time, and that's real, useful information
+  for a guest planning travel, so it shouldn't wait behind the exact-time
+  TBD. `renderEvents()`'s date-known/time-unknown branch (see the note
+  above) now checks for `event.timeOfDay` first and, when present, renders
+  `"{date} · {timeOfDay} — exact time to be announced"` instead of the
+  plainer `"{date} · time to be announced"` — only the still-unknown
+  "exact time" fragment is muted; the date and time-of-day both render at
+  full confirmed weight since both are real. Falls back to the old
+  wording automatically for any event without a `timeOfDay` set. Also
+  fixed a factual inconsistency this surfaced: Mehendi's description
+  said "an evening of celebration" while the actual function is a
+  morning one — corrected to "a morning of celebration."
 - Accent motifs (thread lines + heart SVG) that used to be the hero's
   signature "one bold moment" remain **retired** — the hero still leans on
   the single finished focal photo asset (see Architecture patterns / Hero

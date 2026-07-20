@@ -1,9 +1,10 @@
 /**
  * rsvp.js
- * Static RSVP form — Name, Will you attend?, Guest count (collapses when
- * not attending), Phone, Message. Renders once as a single paper card;
- * submits via MockAPI.submitRSVP, which posts to the configured Google
- * Sheet endpoint when set (see js/utils.js and scripts/google-apps-script/).
+ * Static RSVP form — Name, Will you attend?, Guest count, Arrival plan,
+ * and a stay-reassurance note (all three collapse together when not
+ * attending), Phone, Message. Renders once as a single paper card; submits
+ * via MockAPI.submitRSVP, which posts to the configured Google Sheet
+ * endpoint when set (see js/utils.js and scripts/google-apps-script/).
  */
 
 const RSVP = (() => {
@@ -57,6 +58,18 @@ const RSVP = (() => {
             </div>
           </div>
 
+          <div class="field-group guest-count-group" id="field-arrival">
+            <label class="field-label" for="rsvp-arrival">When do you think you&rsquo;ll arrive? <span class="field-optional">(optional)</span></label>
+            <input class="field-input" id="rsvp-arrival" name="arrivalPlan" type="text" autocomplete="off"
+              placeholder="e.g. Feb 22 evening &mdash; or &ldquo;not sure yet&rdquo;"
+              value="${prefill.arrivalPlan || ''}" />
+          </div>
+
+          <div class="field-group guest-count-group rsvp-stay-note" id="field-stay-note">
+            <span data-lucide="bed-double" aria-hidden="true"></span>
+            <p><strong>Coming from out of town? Your stay is taken care of</strong> &mdash; we&rsquo;ll share the details soon.</p>
+          </div>
+
           <div class="field-group">
             <label class="field-label" for="rsvp-phone">Phone number <span class="field-optional">(optional)</span></label>
             <input class="field-input" id="rsvp-phone" name="phone" type="tel" placeholder="+91 98765 43210"
@@ -82,6 +95,7 @@ const RSVP = (() => {
         </div>
       </div>`;
 
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     wireForm();
   };
 
@@ -91,6 +105,10 @@ const RSVP = (() => {
     const nameGroup = Utils.qs('#field-name', container);
     const attendGroup = Utils.qs('#field-attend', container);
     const guestGroup = Utils.qs('#field-guests', container);
+    // Guest count, arrival plan, and the stay-reassurance note only make
+    // sense once someone has said they're coming — collapse/reveal all
+    // three together (see the shared .guest-count-group animation).
+    const yesOnlyGroups = [guestGroup, Utils.qs('#field-arrival', container), Utils.qs('#field-stay-note', container)];
     const stepDown = Utils.qs('#step-down', container);
     const stepUp = Utils.qs('#step-up', container);
     const countValue = Utils.qs('#count-value', container);
@@ -106,7 +124,7 @@ const RSVP = (() => {
     if (attending) {
       attendBtns.forEach((b) => b.classList.toggle('is-selected', b.dataset.attend === attending));
       if (attending === 'no') {
-        guestGroup.classList.add('is-collapsed');
+        yesOnlyGroups.forEach((g) => g.classList.add('is-collapsed'));
         submitBtn.textContent = 'Send my regrets';
       }
     }
@@ -131,10 +149,10 @@ const RSVP = (() => {
         attending = btn.dataset.attend;
         attendGroup.classList.remove('has-error');
         if (attending === 'no') {
-          guestGroup.classList.add('is-collapsed');
+          yesOnlyGroups.forEach((g) => g.classList.add('is-collapsed'));
           submitBtn.textContent = 'Send my regrets';
         } else {
-          guestGroup.classList.remove('is-collapsed');
+          yesOnlyGroups.forEach((g) => g.classList.remove('is-collapsed'));
           submitBtn.textContent = 'Send RSVP';
         }
       });
@@ -156,6 +174,7 @@ const RSVP = (() => {
         name,
         attending: attending === 'yes',
         guests: attending === 'yes' ? guestCount : null,
+        arrivalPlan: attending === 'yes' ? Utils.qs('#rsvp-arrival', form).value.trim() : '',
         phone: Utils.qs('#rsvp-phone', form).value.trim(),
         message: Utils.qs('#rsvp-message', form).value.trim(),
       };
@@ -177,6 +196,7 @@ const RSVP = (() => {
         name: Utils.qs('#rsvp-name', container)?.value,
         attending: attending === 'yes',
         guests: guestCount,
+        arrivalPlan: Utils.qs('#rsvp-arrival', container)?.value,
         phone: Utils.qs('#rsvp-phone', container)?.value,
         message: Utils.qs('#rsvp-message', container)?.value,
       });

@@ -135,7 +135,9 @@
       "WebFetch(domain:www.figma.com)",
       "Bash(npm install *)",
       "Bash(awk '/^\\\\.hero {/,/^}/' css/components.css)",
-      "Bash(sips -g pixelWidth -g pixelHeight assets/images/wedding-childhood-story-v3.png)"
+      "Bash(sips -g pixelWidth -g pixelHeight assets/images/wedding-childhood-story-v3.png)",
+      "Bash(grep -n \"honestly \\\\`TBD\\\\`\\\\|every date/venue/dress-code\\\\|is-tbd class only\\\\|Event card .TBD. consistency\" CLAUDE.md)",
+      "Bash(grep -n \"explicitly \\\\`TBD\\\\`\\\\|no longer\\\\s*\\\\`TBD\\\\`\\\\|Blocked on user input\" TODO.md)"
     ]
   }
 }

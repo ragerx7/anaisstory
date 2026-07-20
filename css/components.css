@@ -680,10 +680,14 @@ body.nav-open {
    inconsistent rather than as one honest "not yet decided" signal. Unify
    every TBD placeholder to the same quiet, muted-italic treatment; real
    values (once dates/venues are confirmed) keep their original distinct
-   styling since this class is only applied while the value is literally 'TBD'. */
+   styling since this class is only applied while the value is literally 'TBD'.
+   The datetime line can now be a *mix* of a real date and a still-unknown
+   time (or vice versa), so there .is-tbd lands on an inner <span> around
+   just the unknown half rather than the whole line — hence the descendant
+   selector below instead of a third compound one. */
 .event-card__badge.is-tbd,
-.event-card__datetime.is-tbd,
-.event-card__details dd.is-tbd {
+.event-card__details dd.is-tbd,
+.event-card__datetime .is-tbd {
   color: var(--color-text-muted);
   font-style: italic;
   font-weight: 400;
@@ -832,6 +836,39 @@ body.nav-open {
   font-size: var(--fs-small);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-2xs);
+}
+
+/* Quiet inline aside, not a second elevated card — flat fill only, no
+   shadow/border, so it reads as an answer to the "where do I stay?"
+   question the arrival-plan field right above it naturally raises. */
+.rsvp-stay-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2xs);
+  background-color: rgba(242, 196, 206, 0.28);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.85rem;
+}
+
+.rsvp-stay-note svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  color: var(--color-accent);
+}
+
+.rsvp-stay-note p {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.rsvp-stay-note strong {
+  color: var(--color-text);
+  font-weight: 500;
 }
 
 .stepper {
