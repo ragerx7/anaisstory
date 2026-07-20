@@ -639,6 +639,53 @@ body.nav-open {
   background: linear-gradient(to right, var(--color-accent), var(--color-gold));
 }
 
+/* The illustration banner stands in for the accent bar on cards that have one. */
+.event-card.has-illo::before {
+  display: none;
+}
+
+/* aspect-ratio matches the source illustrations' native 1920x1080 exactly,
+   so the full artwork always shows — no top/bottom cropping regardless of
+   card width, unlike a fixed height with object-fit:cover. Each event gets
+   its own gradient wash, hand-tuned to that illustration's own palette
+   (rose/peach for Mehendi's henna tones, lavender/peach for Sangeet's gown,
+   gold for Haldi's turmeric, rose-to-gold for the Wedding's bangles) — the
+   images themselves are transparent PNGs, so the wash shows through
+   directly with no blend-mode trick needed. */
+.event-card__illo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.event-card__illo--mehendi {
+  background: linear-gradient(170deg, #fdf1ee 0%, #f3c9c2 55%, #f6d9c8 100%);
+}
+
+.event-card__illo--sangeet {
+  background: linear-gradient(170deg, #f3ecf5 0%, #e3d3e6 55%, #f0ddd0 100%);
+}
+
+.event-card__illo--haldi {
+  background: linear-gradient(170deg, #fdf3e0 0%, #f5d9a0 55%, #f0ddd0 100%);
+}
+
+.event-card__illo--wedding {
+  background: linear-gradient(170deg, #fbe9ee 0%, #e0b8c2 55%, #c9935a 100%);
+}
+
+.event-card__illo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(ellipse 82% 78% at 50% 50%, #000 62%, transparent 100%);
+}
+
 .event-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-soft);
@@ -655,6 +702,9 @@ body.nav-open {
   margin-bottom: var(--space-3xs);
 }
 
+/* Spells out "Dress code: …" rather than a bare value (via JS in
+   renderEvents()), so the badge is never ambiguous about what it labels —
+   on both this TBD state and the confirmed state once a real value lands. */
 .event-card__badge {
   flex-shrink: 0;
   font-family: var(--font-body);

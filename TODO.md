@@ -694,6 +694,13 @@ the start of every session.
   heading` template) — dormant for now, will apply automatically
   whenever those sections are un-commented. Verified live, no console
   errors.
+- **Sealed-coda caption briefly tried in Pinyon Script, reverted same
+  session (2026-07-20), `?v=32`**: tried switching "The seals loosen in
+  their own time." to `var(--font-script)` + `var(--color-accent)` to
+  match the site's "script = rose" pairing, but the user asked to
+  revert it — `.sealed-coda__caption` is back to its original Playfair
+  Display italic / `--color-text-secondary` treatment, unchanged from
+  before this session. Verified live, no console errors.
 
 - [ ] **Regrade or redesign `story-4.jpg`** (the "Coming Soon" graphic for
       the 2027 Our Wedding milestone) — it was designed against the old

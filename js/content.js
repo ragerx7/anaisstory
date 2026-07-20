@@ -79,6 +79,8 @@ const WEDDING_CONTENT = {
       mapUrl: null,
       dressCode: 'TBD',
       description: 'Intricate henna, live music, and a morning of celebration.',
+      photo: 'assets/images/mehndi-transparent.png',
+      photoAlt: 'Illustration of henna-decorated hands with bangles',
     },
     {
       id: 'sangeet',
@@ -91,6 +93,8 @@ const WEDDING_CONTENT = {
       mapUrl: null,
       dressCode: 'TBD',
       description: 'A night of music, dance, and cocktails as our families come together.',
+      photo: 'assets/images/sangeet-transparent.png',
+      photoAlt: 'Illustration of a couple in formal evening wear',
     },
     {
       id: 'haldi',
@@ -103,6 +107,8 @@ const WEDDING_CONTENT = {
       mapUrl: null,
       dressCode: 'TBD',
       description: 'A joyful morning of turmeric, laughter, and family tradition.',
+      photo: 'assets/images/haldi-transparent.png',
+      photoAlt: 'Illustration of a couple in yellow haldi ceremony attire',
     },
     {
       id: 'wedding',
@@ -115,6 +121,8 @@ const WEDDING_CONTENT = {
       mapUrl: null,
       dressCode: 'TBD',
       description: 'The ceremony uniting our two families as one.',
+      photo: 'assets/images/wedding-transparent.png',
+      photoAlt: 'Illustration of the couple’s hands joined in the wedding ceremony',
     },
   ],
 

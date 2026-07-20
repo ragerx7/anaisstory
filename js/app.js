@@ -66,12 +66,20 @@ const App = (() => {
               <span data-lucide="map-pin" aria-hidden="true"></span> View on map
             </a>`
           : '';
+        // Badge text spells out the category ("Dress code: …") instead of a
+        // bare value, so the badge is never ambiguous about what it's
+        // labeling — on both the TBD and (later) confirmed states.
+        const isTbdDress = event.dressCode === 'TBD';
+        const dressBadgeValue = isTbdDress ? 'TBA' : event.dressCode;
         return `
-        <article class="event-card" data-reveal aria-labelledby="event-${event.id}-name">
+        <article class="event-card has-illo" data-reveal aria-labelledby="event-${event.id}-name">
+          <div class="event-card__illo event-card__illo--${event.id}">
+            <img src="${event.photo}" alt="${event.photoAlt}" loading="lazy" width="1920" height="1080" />
+          </div>
           <div class="event-card__body">
             <div class="event-card__header">
               <h3 id="event-${event.id}-name">${event.name}</h3>
-              <span class="event-card__badge${event.dressCode === 'TBD' ? ' is-tbd' : ''}">${revealLabel(event.dressCode)}</span>
+              <span class="event-card__badge${isTbdDress ? ' is-tbd' : ''}">Dress code: ${dressBadgeValue}</span>
             </div>
             <p class="event-card__datetime">${datetime}</p>
             <dl class="event-card__details">

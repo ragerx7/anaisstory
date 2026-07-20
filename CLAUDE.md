@@ -607,6 +607,14 @@ Current palette/tokens (in `css/style.css` `:root`):
   those return, no action needed then. Also updated Events' subtitle:
   "Everything you need to join us for each celebration." → "...We
   cannot wait to share these moments with you."
+- **`.sealed-coda__caption` was briefly tried in Pinyon Script/rose the
+  same day, then reverted at the user's request back to its original
+  Playfair Display italic/`--color-text-secondary` treatment** — "The
+  seals loosen in their own time." stays in that quieter register, not
+  script. The "every `--font-script` use pairs with `--color-accent`"
+  rule from the section-headings note above still holds for the
+  instances that kept the change (hero H1, footer names, `.eyebrow`, the
+  three `.section-heading h2`s) — this caption just isn't one of them.
 - Accent motifs (thread lines + heart SVG) that used to be the hero's
   signature "one bold moment" remain **retired** — the hero still leans on
   the single finished focal photo asset (see Architecture patterns / Hero
