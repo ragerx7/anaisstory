@@ -141,7 +141,10 @@
       "Bash(cp \"Mehndi-bffedc88-transparent.png\" /Users/anubhavgaba/Wedding/assets/images/mehndi-transparent.png)",
       "Bash(cp \"sangeet-a72bc012-transparent.png\" /Users/anubhavgaba/Wedding/assets/images/sangeet-transparent.png)",
       "Bash(cp \"Haldi-fd4f9a06-transparent.png\" /Users/anubhavgaba/Wedding/assets/images/haldi-transparent.png)",
-      "Bash(cp \"wedding-d3a8e752-transparent.png\" /Users/anubhavgaba/Wedding/assets/images/wedding-transparent.png)"
+      "Bash(cp \"wedding-d3a8e752-transparent.png\" /Users/anubhavgaba/Wedding/assets/images/wedding-transparent.png)",
+      "Bash(git -C /Users/anubhavgaba/Wedding status --short)",
+      "Bash(git -C /Users/anubhavgaba/Wedding log --oneline -5)",
+      "Bash(git -C /Users/anubhavgaba/Wedding diff --stat HEAD)"
     ]
   }
 }

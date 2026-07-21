@@ -114,7 +114,14 @@ const Animations = (() => {
     gsap.registerPlugin(ScrollTrigger);
 
     Utils.qsa('.timeline-item__photo img').forEach((img) => {
-      gsap.set(img, { scale: 1.15 });
+      // Vertical-only overscale: the parallax slide below only needs
+      // extra height headroom so the vertical motion never reveals the
+      // container's top/bottom edge. A uniform scale() was also zooming
+      // in horizontally, cropping into the sides of the photo (cutting
+      // off subjects positioned near the frame edges) for no reason —
+      // scaleY alone gives the same vertical coverage without touching
+      // the horizontal framing at all.
+      gsap.set(img, { scaleX: 1, scaleY: 1.15 });
       gsap.fromTo(
         img,
         { yPercent: -6 },

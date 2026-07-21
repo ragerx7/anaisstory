@@ -701,6 +701,81 @@ the start of every session.
   revert it — `.sealed-coda__caption` is back to its original Playfair
   Display italic / `--color-text-secondary` treatment, unchanged from
   before this session. Verified live, no console errors.
+- **RSVP message field label fixed, third→first person (2026-07-21),
+  `?v=19`**: "Any message for the bride & groom?" → "Any message for
+  us?" in `js/rsvp.js` — matches the first-person voice used everywhere
+  else on the site ("join us," "Save us the honour," "we promise").
+  Verified live.
+- **Mobile nav link state system fixed (2026-07-21), `?v=21`**: the
+  hamburger menu's three links (Our Story/Events/RSVP) could show three
+  visually unrelated looks at once — an unstyled native focus-ring box on
+  the auto-focused first link (`openMenu()` calls `firstLink.focus()`),
+  a plain color shift on the scroll-linked active-section link, and plain
+  text for everything else. Root cause: `.site-nav a:focus-visible` and
+  `.site-nav a.is-active` both only set `color`, so nothing owned the
+  outline and the browser's native ring filled the gap. Design-lead spec'd
+  a two-channel fix (rose ring + wash for interaction, gold underline for
+  the active section) — **the user explicitly asked to keep only the
+  hover + active-section styling and leave focus-visible untouched**
+  (relies on the site's pre-existing global `:focus-visible` rule in
+  `style.css`, unchanged). Implemented in `.site-nav a`/`a:hover`/
+  `a.is-active` in `components.css`: hover gets a blush wash + rose text,
+  `.is-active` gets rose text + a small gold hairline underline via
+  `::after`. Verified live (DOM class toggling + screenshot).
+- **Event cards restructured with a labeled dress-code badge + themed
+  illustration banners (2026-07-21), `?v=37` (several rounds, same
+  session).** Started from a design-lead ghost-chip spec (dashed vs.
+  filled pill) for the "dress code TBD" clarity problem raised earlier
+  in the week; the user rejected it twice more for not naming the
+  category explicitly, then supplied their own externally-built design
+  comparison file (`.dc.html`, from a design tool outside this session)
+  with four labeled options (1a–1d) and picked directly from it — see
+  CLAUDE.md's Architecture patterns for the general pattern this
+  revealed (external pre-built option files are already-decided specs,
+  implement literally, don't re-route through design-lead). Went through
+  several concrete iterations in one session:
+  - First implemented **1d** (a pinned "hang tag" swing-tag on the card
+    corner) + real illustration images the user supplied
+    (`Mehndi.png`/`sangeet.png`/`Haldi.png`/`wedding.png`, one per
+    event, added to `assets/images/`).
+  - User then switched the pick to **1b** (an inline header badge that
+    spells out "Dress code: TBA" instead of a bare value) — hang-tag
+    markup/CSS fully removed, badge restored with the labeled text.
+    Illustration banners kept (shared across all four options in the
+    reference file).
+  - **Real bug fixed**: the illustration banners were cropping the
+    artwork (`object-fit: cover` on a fixed 150px height, against
+    1920×1080 source images where the subject nearly fills the frame
+    top-to-bottom) — fixed by matching the banner's `aspect-ratio` to
+    the source images' real 16:9 exactly, with `object-fit: contain`,
+    so nothing is ever cropped regardless of card width.
+  - User asked for a blush→gold wash behind the illustration with
+    `mix-blend-mode: multiply` + a radial edge-fade mask (to tint the
+    white-background illustrations into the wash) — implemented,
+    verified, then the user asked to **revert it** (back to a plain
+    card-colored background, no blend mode).
+  - User then supplied a **second** external design file with
+    *transparent*-background versions of all four illustrations plus a
+    unique, hand-tuned gradient wash per event (rose/peach for Mehendi,
+    lavender/peach for Sangeet, gold for Haldi, rose→gold for the
+    Wedding) and a softer radial mask, no blend mode needed since the
+    PNGs are already transparent — **this is the final, current,
+    confirmed state** (the earlier revert doesn't apply to this pass,
+    it was a different, since-superseded technique). Implemented via
+    `event.id`-scoped modifier classes (`.event-card__illo--mehendi`
+    etc.) in `components.css`, new transparent PNGs added to
+    `assets/images/` (`mehndi-transparent.png` etc.), `content.js`'s
+    `photo` fields repointed at them, `app.js`'s `renderEvents()` adds
+    the modifier class. Verified live at mobile and desktop widths —
+    all four cards show correct artwork, correct per-event wash, no
+    cropping, badge reads "Dress code: TBA" for all four (still
+    genuinely unknown).
+  - **Note**: a concurrent session appears to have been committing
+    related work to this same repo during this session (git log shows a
+    commit, "event card illustrations," that already contained this
+    conversation's in-progress edits) — see CLAUDE.md's new gotcha about
+    this. Not something to act on, just don't be surprised if file state
+    doesn't match the last thing *this* conversation wrote.
 
 - [ ] **Regrade or redesign `story-4.jpg`** (the "Coming Soon" graphic for
       the 2027 Our Wedding milestone) — it was designed against the old
@@ -776,8 +851,60 @@ the start of every session.
       (700) / `height` (914) / `type` (image/jpeg) added so crawlers don't
       have to guess. **Not yet live** — this is a local edit; see the note
       below on pushing it to `main` for GitHub Pages to pick it up.
+- **Story-photo parallax was cropping subjects off the sides, fixed
+  (2026-07-21), `?v=38`**: the vertical scroll-parallax on Story timeline
+  photos (`initStoryParallax()` in `js/animations.js`) applied a uniform
+  `gsap.set(img, { scale: 1.15 })` to give the vertical slide headroom so
+  it never revealed the container's top/bottom edge — but a uniform
+  scale also zoomed in 15% horizontally, cropping into the sides of each
+  photo for no functional reason, cutting off subjects positioned near
+  the frame edges (flagged by the user with a screenshot of "Meeting
+  Each Other" showing the second person almost entirely cropped out).
+  Changed to `scaleX: 1, scaleY: 1.15` — vertical parallax headroom
+  preserved, zero horizontal crop. Verified live: computed inline
+  transform now reads `scale(1, 1.15)`, both people in the "Meeting Each
+  Other" photo fully visible width-wise, no console errors.
+- **That fix above turned out incomplete — the real bug found and fixed
+  same day (2026-07-21), `?v=41`**: the user checked again after the
+  scaleX fix shipped and the right side was still cropped. Root cause
+  was unrelated to GSAP entirely: the `<img>` in `js/app.js`'s story
+  template carried HTML `width="480" height="360"` attributes alongside
+  a CSS rule setting `aspect-ratio: 4/3` on the same element — and in
+  this rendering engine, the literal `height="360"` attribute won out
+  over the CSS-derived height, making the box 327×360 instead of the
+  correct 327×245 at mobile width, so `object-fit: cover` cropped ~32%
+  of the image width to fill the too-tall box. Fixed by removing the
+  HTML `width`/`height` attributes entirely (the CSS `aspect-ratio`
+  rule alone is sufficient to reserve space, no layout-shift
+  regression). See CLAUDE.md's gotcha for the full root-cause writeup
+  and the general rule this establishes for the codebase. Verified: all
+  four Story photos now compute the correct 245.25px height at 327px
+  width, both subjects fully visible in every photo, no console errors.
 
 ## Blocked on user input — don't assume, ask again if it comes up
+
+- **"Bollywood/pop" copy voice direction — spec'd and mocked up
+  (2026-07-21), not yet implemented, awaiting the user's pick.** User
+  asked to rethink the site's copy in a "Bollywood/pop style." Scope
+  confirmed via direct questions: **copy only** (Petal Blush visual
+  design stays exactly as-is), and the voice should land on **signature
+  moments** (hero, invitation, section headings, Our Story milestones,
+  event descriptions, RSVP success states, guestbook seed) while
+  functional copy (form labels, buttons, errors, FAQ) gets a warmth
+  pass only, not the full filmy treatment. Design-lead produced a full
+  voice charter (filmy energy, not parody; one Hindi word per moment
+  max; one iconic reference — "Picture abhi baaki hai" — spent exactly
+  once, on the locked Gallery message, where it's literally true; a
+  running "your love story as a film" motif: Our Story becomes
+  "scenes," the wedding is the "grand finale") plus a full old→new copy
+  table. Mockup Artifact:
+  `https://claude.ai/code/artifact/603c0ac1-150d-4725-b0ad-959a4aee9b19`.
+  **Nothing from this has been implemented in the real site yet** — the
+  user hasn't confirmed the overall direction or picked between the
+  RSVP success headline alternates ("You said haan!" vs. safer options
+  like "See you on the dance floor!"). Ask before assuming any of this
+  copy is wanted; don't implement from the mockup without an explicit
+  go-ahead, per the mockup-first workflow.
 
 - ~~**RSVP → Google Sheet setup**~~ — **confirmed genuinely working,
   2026-07-18**, after a bumpy verification (worth understanding, see

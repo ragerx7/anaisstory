@@ -12,217 +12,176 @@ first."
 
 ---
 
-## Last session: 2026-07-19 (very long session — bug fixes, a wide design
-exploration, then a full palette pivot ported from an external reference)
+## Last session: 2026-07-21 (two Claude Code sessions ran concurrently
+against this same repo most of the day — this snapshot merges both)
 
-Roughly in order:
+This is a real, confirmed pattern this project keeps hitting (see the
+concurrent-editing gotcha in CLAUDE.md) — not a one-off. If you're picking
+this up, assume another session may still be active; re-read files fresh
+before editing rather than trusting this doc or an earlier in-conversation
+read.
 
-### Part 1 — Section removal, a real motion bug, two real content bugs
+### Thread A — mobile nav fix, Events-card illustrations, Bollywood copy
+exploration (a sibling session; the previous version of this file was its
+handoff, summarized here rather than lost)
 
-- **Gallery, Guest Memories, Guestbook, Wedding Film, and FAQ removed from
-  the live site** (commented out in `index.html`, not deleted — trivial to
-  restore). This was flagged as tension with CLAUDE.md's usual "in-place
-  more-is-coming framing over outright removal" rule for a live site; asked
-  the user to choose explicitly, and they chose full removal for all five,
-  one at a time as each came up.
-- **"The Pressed Seal" motion implemented** (wax-seal stamp-in animation on
-  the Invitation card and the sealed coda) — and a **real, easy-to-repeat
-  bug found and fixed** in the process: `Animations.revealNew()`'s
-  `.is-revealed` class is added to *every* `[data-reveal]` element
-  immediately at page load as a re-processing guard — it does **not** mean
-  the element is on-screen yet. The stamp animation was keyed off that
-  class by mistake, so it played out fully within ~1s of page load,
-  off-screen, for every section at once — invisible by the time a guest
-  actually scrolled there. Fixed by adding a second class, `.is-in-view`,
-  inside the GSAP tween's `onStart` callback (fires only when
-  ScrollTrigger's condition is actually met) — now documented as a
-  standing gotcha in CLAUDE.md.
-- **Two real content bugs fixed**, same root cause: the generic fallback
-  guest object's `displayName` is literally the string `"Guest"` for
-  anyone on the plain shared link (no personalized `?guest=` param) — (1)
-  the RSVP Name field was prefilling with the literal word "Guest,"
-  forcing every visitor to delete it first (fixed: only prefill for
-  genuinely personalized links); (2) the footer read "Made with love, ♥
-  for our guest, Guest" (fixed: dropped the dynamic guest name, static
-  copy now "Made with love, ♥ for our friends and family").
-- **RSVP → Google Sheet silently stopped saving** — likely root cause
-  found: `SETUP.md` had instructed "copy the current contents of Code.gs
-  into your Apps Script editor, replacing what's there" for an earlier fix,
-  but the repo's `Code.gs` still had the placeholder secret
-  `REPLACE_WITH_YOUR_OWN_SECRET`, not the real one — following that
-  instruction would silently overwrite the live secret, breaking the match
-  with `content.js` and causing every submission to fail server-side as
-  `Unauthorized`. Fixed by rotating to a new secret and setting it
-  identically in both `content.js` and `Code.gs`, so the repo file is
-  finally safe to copy-paste wholesale. **User still needs to redeploy**
-  the updated `Code.gs` (paste into the Apps Script editor, Deploy →
-  Manage deployments → Edit → New version) — not yet confirmed done.
-- **Real Open Graph / WhatsApp-preview bug fixed**: `og:image`/
-  `twitter:image`/canonical/`og:url` were still pointing at
-  `https://example.com/` and the stale `hero.svg` placeholder. Now point
-  at the real deployed URL (`https://ragerx7.github.io/anaisstory/`) and
-  the real hero photo, with explicit width/height/type so crawlers don't
-  have to guess.
+- **RSVP message field label**: "Any message for the bride & groom?" → **"Any
+  message for us?"** (third→first person fix, `js/rsvp.js`).
+- **Mobile nav link states, real bug fixed**: the mobile menu's three links
+  looked inconsistent (boxed/rose/plain) because `:focus-visible` and
+  `.is-active` both only set `color`, leaving the browser's native focus
+  ring to fill the gap. Design-lead spec'd a two-channel fix (rose ring for
+  interaction, gold underline for active section); user asked to keep only
+  hover + active-section styling, not custom focus-visible. Shipped.
+- **Events cards gained illustration banners** — this is the "henna hands /
+  bangles" image seen mid-way through Thread B below; it turned out to
+  already be this thread's in-progress work, not a mystery new asset.
+  Several real iterations: a "ghost chip" dress-code badge was rejected
+  (didn't name the category), replaced with a labeled micro-tag, then the
+  user supplied their own **externally-built design file** (a `.dc.html`
+  export from a design tool, four labeled options) and picked directly from
+  it — see CLAUDE.md's gotcha: treat these as already-decided specs to
+  implement literally, not a fresh design-lead question. Final state: a
+  "Dress code: TBA" inline header badge + a themed illustration banner per
+  event (`.event-card__illo--${event.id}`), each with its own gradient wash,
+  using **transparent** PNGs (a second external file supplied after an
+  opaque-background + blend-mode experiment was tried and reverted).
+  `event.photo`/`photoAlt` now live in `js/content.js`.
+- **"Bollywood/pop" copy voice — spec'd and mocked up, still NOT
+  implemented.** Full voice charter + old→new copy table exist (design-lead
+  spec + Artifact mockup: `https://claude.ai/code/artifact/603c0ac1-150d-4725-b0ad-959a4aee9b19`),
+  covering hero/invitation/section headings/Our Story/events/RSVP
+  success/guestbook. Awaiting the user's go-ahead on the overall direction
+  and a specific pick on the RSVP success headline ("You said haan!" vs.
+  safer alternates). **Don't assume this is wanted or abandoned — ask.**
 
-### Part 2 — A wide design exploration (six motion candidates, then three
-full theme directions) — **none of this was the direction ultimately
-adopted**, see Part 3
+### Thread B — this session: section-header/typography cleanup, real event
+dates, RSVP arrival field, header logo legibility, and one real CSS bug
+chased through two wrong theories to the actual root cause
 
-Six motion candidates explored via design-lead (immersive-but-minimal
-brief): a reimagined Our Story sequence ("The Story Writes Itself" — a
-single scroll-scrubbed ink rail, superseding an earlier busier "Turning the
-Pages" pass), the Pressed Seal (implemented, see Part 1), a full-bleed
-parallax band, drawn-in-ink ornaments, and a "lit paper" ambient glow.
-Mockups: `https://claude.ai/code/artifact/0323a40b-a0de-484c-90f9-a1c9cd66b1a6`
-(original Turning Pages + Pressed Seal), `https://claude.ai/code/artifact/1e36f5d1-eb93-418f-8368-4cd74670b96e`
-(Full-Bleed Band/Drawn-in-Ink/Lit Paper), `https://claude.ai/code/artifact/f918d9c9-bd0f-4e22-aed7-410899f64eca`
-(Story Writes Itself, after user feedback that the first pass "clashed").
-**None of the non-Pressed-Seal candidates were confirmed or built.**
-
-Separately, three full palette/theme directions were explored (Pop Wedding,
-Hip Wedding, Traditional Indian Wedding) via design-lead, plus a
-feeling-first "First Light" direction (deep romantic love / immense joy /
-anticipation, built around a sunrise metaphor). Swatch/type board:
-`https://claude.ai/code/artifact/f6151dfe-f418-4f48-92cb-293c368e7281`. Full
-mockups were built locally for Pop Wedding and First Light but **neither was
-ever actually published/shown to the user** — both attempts were
-interrupted mid-build when the user pivoted to Part 3 instead. **Treat all
-of Part 2 as genuine, un-adopted exploration** — if the user asks about any
-of these later, they were explored and set aside, not forgotten.
-
-### Part 3 — The actual adopted direction: "Petal Blush," ported from an
-external Figma Make reference
-
-The user had a full working site replica built externally (Figma Make,
-React/Vite/Tailwind) and shared the exported source folder directly
-(a local `Downloads/` path, not in this repo) with an explicit instruction
-to implement it for real, plus two non-negotiable corrections: (1) RSVP
-keeps its real fields exactly as they were (no email field, no "Joyfully
-accepts/Regretfully declines" relabeling); (2) Events keeps the real
-4-event list (Mehendi/Sangeet & Cocktails/Haldi/Wedding, everything
-honestly `TBD`), not the reference's fabricated 4-event list/specifics.
-This session treated a complete external reference implementation as
-already serving the "mockup, confirmed" step (see the updated
-`feedback_mockup_first_workflow` memory) — went straight to porting it
-rather than building another internal mockup of someone else's mockup.
-
-**What shipped** (full detail in CLAUDE.md's Design System section and
-TODO.md's Done list — this is the summary):
-- New palette (`--color-accent: #8b3a52` "Bridal Rose," plus new
-  `--color-blush`/`--color-mauve`/`--color-peach` roles) and fonts
-  (Playfair Display + Jost + a new script face, Pinyon Script, for the
-  couple's names and nav logo initials only).
-- New real features: a live countdown timer in the hero, a visible "We're
-  Getting Married" eyebrow, a frosted-glass nav on scroll, a pill-styled
-  RSVP nav link, a subtle scroll-scrubbed parallax on Our Story's photos,
-  ghost-outline year numerals + gold milestone labels replacing the old
-  timeline spine/marker, a recurring "❧" ornament divider under section
-  headings, and the Invitation's restored "Together with their families"
-  eyebrow line.
-- What was explicitly **not** ported: the reference's fictional
-  2018→2023 Story narrative (kept the real 2024→2027 Meesho timeline), its
-  RSVP email field/relabeled buttons, and its fabricated Events specifics —
-  all per the user's own corrections above.
-
-**This took three follow-up rounds to actually land, and the lesson from
-that is now a saved memory** (`feedback_systematic_reference_audit`):
-repeated "background/foreground/gradient/spacing/padding doesn't match"
-feedback meant real, findable gaps each time (a shared `--shadow-soft`
-token never re-tinted from the old palette — probably the single biggest
-cause, since it silently backs shadows everywhere; a gradient stop
-literally misread — reference's `${color}55` is a hex-alpha suffix, not a
-stop *position*; container widths/gaps/paddings approximated instead of
-copied exactly; a real structural bug where padding on the wrong element
-broke an absolutely-positioned decorative bar's alignment). **If the user
-reports this kind of mismatch again, do a full value-by-value audit of the
-reference source immediately — don't do another round of spot-fixes.**
-
-### Part 4 — Doc/memory sync (this pass)
-
-This rewrite, plus: two new memories saved
-(`feedback_systematic_reference_audit`, `project_wedding_site_current_state`),
-one existing memory extended (`feedback_mockup_first_workflow`, new clause
-about external reference implementations skipping the internal-mockup
-step), CLAUDE.md's Design System section already rewritten in full earlier
-in the session to reflect Petal Blush (not appended — the old scrapbook
-section's content was replaced), TODO.md kept current throughout via
-incremental updates rather than done at the end, and PLAN.md's stale
-"scrapbook" references and section-status table corrected in this pass.
+- **Section headers simplified to one label each**: Story/Events/RSVP used
+  to stack a script eyebrow above a separate Playfair `<h2>` — removed the
+  eyebrow, kept one heading per section (Story → "Our Story", Events →
+  "Events", RSVP → **"Save us the honour"**, deliberately dropping the
+  literal word "RSVP" since it's already in the nav/hero). Then restyled
+  all three (plus later "The seals loosen in their own time," then
+  reverted at the user's request) to Pinyon Script + `--color-accent`,
+  matching the hero name treatment — **every** `--font-script` use on the
+  site now pairs with `--color-accent`, no exceptions currently live.
+- **Header logo ("N & A") legibility fix**: was Pinyon Script at 28px,
+  flagged unreadable — three isolated glyphs with no word-context to
+  disambiguate the ampersand's loops, a structural problem no size fixes.
+  Design-lead's call: switch to `--font-heading` (Playfair Display),
+  1.375rem/500 weight/0.08em tracking, keep script for the hero H1/footer
+  signature only (true display moments, different job from a nav anchor).
+- **Real event dates landed**: Mehendi & Sangeet Night → Feb 23, 2027;
+  Haldi Holi & The Wedding → Feb 24, 2027 (time/venue/dress-code still
+  genuinely `TBD`). Added a `timeOfDay` field (Morning/Night) so guests get
+  useful travel info ahead of exact times — renders as "{date} ·
+  {timeOfDay} — exact time to be announced," only the truly-unknown part
+  muted. Event names finalized: Sangeet Night, Haldi Holi, The Wedding.
+- **RSVP additions**: hero CTA caption → "We can't wait to celebrate with
+  you." (was an instruction aimed at the guest, now the couple's own
+  feeling). New optional "arrival plan" field ("When can we expect to
+  welcome you?", went through two earlier copy revisions first) + a
+  stay-reassurance note ("Coming from out of town? Your stay is taken care
+  of...") — both share the guest-count stepper's collapse/reveal group.
+  `Code.gs` updated with an "Arrival Plan" column — **user still needs to
+  manually redeploy the Apps Script** for their live Sheet to receive it;
+  also needs the column manually inserted in the existing sheet (redeploy
+  alone won't add it — the header-row auto-create only fires on a
+  completely empty sheet).
+- **Invitation card rewritten** (three passes, final copy is the user's own
+  direct instruction): eyebrow "A little note from us", heading "We'd Love
+  You to Be There", line "Because celebrations are better with the people
+  we love." Along the way caught a real first/third-person voice bug
+  ("their families" → "our families") independent of the final rewrite.
+- **Two real CSS bugs found and fixed, both worth reading the full
+  CLAUDE.md gotchas for:**
+  1. `backdrop-filter` directly on `.site-header` was making it a
+     containing block for its `position: fixed` child `.site-nav` (the
+     mobile menu) — the menu's "hidden" translate only moved it by its own
+     wrongly-short height, leaving the RSVP pill visibly stuck under the
+     header at every scroll position. Fixed by moving the blur onto a
+     `::before` pseudo-element instead (not a real DOM ancestor, can't
+     become a containing block).
+  2. **Story photos were cropping subjects off the sides — this took two
+     attempts.** First theory (plausible, wrong): the scroll-parallax's
+     `gsap.set(img, {scale: 1.15})` was zooming in on both axes when only
+     vertical headroom was needed — fixed to `scaleX:1, scaleY:1.15`, and
+     it genuinely does remove one real source of unwanted crop, but **the
+     user checked again with a fresh screenshot and it was still
+     cropped.** Real root cause, found by cloning the live DOM node and
+     bisecting: the `<img>` had HTML `width="480" height="360"`
+     attributes *alongside* a CSS `aspect-ratio: 4/3` rule — this specific
+     rendering engine let the literal `height="360"` attribute win over
+     the CSS-derived height, making the box 327×360 instead of 327×245 at
+     mobile width, so `object-fit: cover` cropped ~32% of the image width
+     to fill the too-tall box. Fixed by removing the HTML attributes
+     entirely (the CSS `aspect-ratio` alone is enough, no layout-shift
+     risk). **General lesson, now in CLAUDE.md: never add HTML
+     `width`/`height` attributes to an `<img>` that already has a CSS
+     `aspect-ratio` rule targeting it, even if the ratios match exactly.**
+- Also hit the project's documented caching gotcha multiple times during
+  verification (a `?nocache=` query param on the URL forces past it) —
+  not new, just a reminder it applies to your own verification, not only
+  real guests.
 
 ---
 
 ## Do this first, next session
 
-1. **Ask whether the `Code.gs` redeploy happened** (Part 1) — both the
-   formula-injection fix *and* the secret rotation need the user to
-   manually redeploy in the Apps Script editor; unconfirmed either way. If
-   RSVPs still aren't reaching the Sheet, this is the first thing to check.
-2. **If the user reports any further "doesn't match" feedback on the
-   Petal Blush port, go straight to a systematic value-by-value audit of
-   the reference source** (see `feedback_systematic_reference_audit`) —
-   don't spot-fix again; three rounds of that already happened this
-   session before it actually worked.
-3. **`story-4.jpg`** (the "Coming Soon" 2027 milestone graphic) was
-   designed for the old maroon scrapbook palette and now clashes with
-   Petal Blush — flagged, not fixed. Needs a regrade or redesign pass.
-4. **The six motion candidates and three theme explorations from Part 2
-   are genuinely unresolved**, not rejected — if the user brings any of
-   them up (Pop/Hip/Traditional/First-Light palettes, the full-bleed
-   parallax band, drawn-in-ink ornaments, lit paper), they were explored
-   and set aside when the Figma reference came in, not forgotten or
-   declined. Ask before assuming Petal Blush is final if it comes up.
-5. **The illustration micro-motif mockup** (heart/sprig ornament for
-   FAQ/Guestbook, from a much earlier session) is likely fully stale now —
-   it was scoped against the old scrapbook palette *and* against FAQ/
-   Guestbook, both of which have since changed (new palette; FAQ/Guestbook
-   are now hidden sections). Don't revive without re-confirming scope.
-6. **Extending further design work to the now-hidden sections** (Gallery/
-   Memories/Guestbook/Film/FAQ) doesn't apply until they're un-hidden —
-   see TODO.md's "Blocked on user input" for the un-hide trigger.
+1. **Ask about the Bollywood/pop copy direction before doing anything else
+   copy-related** — fully spec'd and mocked up (Thread A), not confirmed
+   or implemented. Don't assume wanted or abandoned.
+2. **Confirm whether the user has redeployed `Code.gs`** and manually
+   added the "Arrival Plan" column to their live Google Sheet — both are
+   required and neither happens automatically; RSVP submissions work
+   either way, they just silently won't be captured in the sheet column
+   until this is done.
+3. **Re-read the actual current state of any file before editing it** —
+   the concurrent-editing pattern is real and recurring, confirmed again
+   today across both threads (files changing mid-session without this
+   conversation's own edits, `?v=N` jumping unexpectedly, `git log`
+   showing commits with content already reflected in a session's own
+   in-progress reads).
+4. Everything else from prior sessions is unchanged — see TODO.md's "Not
+   started" and remaining "Blocked on user input" (`story-4.jpg` regrade,
+   the exhibition-rule layout extension to Our Story/Gallery/Memories/
+   Guestbook/Film, real venue/time/dress-code values).
 
 ## Where things live (quick pointers, full detail in CLAUDE.md)
 
-- Palette/type tokens: `css/style.css` `:root` — "Petal Blush," see
-  CLAUDE.md's Design System section for the full token table and history.
-- Countdown timer: `initCountdown()` in `js/app.js`, markup in `index.html`
-  `#hero-countdown`.
-- Story ghost-year/parallax: `renderStory()` in `js/app.js` (markup),
-  `.timeline-item__year`/`.ornament` in `css/components.css`,
-  `initStoryParallax()` in `js/animations.js`.
-- Events real data: `js/content.js` (`events` array, all `TBD`),
-  `renderEvents()` in `js/app.js` (now wraps card content in
-  `.event-card__body` — padding lives there, not on `.event-card` itself,
-  so the top accent bar stays flush with the true edge).
-- RSVP form + backend: `js/rsvp.js`, `js/utils.js` (`submitRSVP`),
-  `scripts/google-apps-script/` (`Code.gs` + `SETUP.md`),
-  `WEDDING_CONTENT.integrations` in `js/content.js`.
-- The `.is-in-view` vs `.is-revealed` distinction (real gotcha, see Part 1):
-  `js/animations.js`'s `revealNew()` and CLAUDE.md's scroll-reveal section.
-- Caching convention: `?v=N` on every CSS/JS tag in `index.html` (now at
-  `v=12`), plus `_headers` at the project root.
-- Hidden sections (commented out, not deleted): Gallery/Memories/
-  Guestbook/Film/FAQ blocks in `index.html`, clearly marked with HTML
-  comments giving the removal date.
-- Dev server: `.claude/launch.json` → `wedding-static-server` (port 4173).
-  A second config, `figma-reference-site`, points at the external Figma
-  Make export folder (port 5173) — only useful if that folder still
-  exists at the path recorded there; ask the user if it's needed again.
+- Section headings: `.section-heading h2` in `style.css` (Pinyon
+  Script + `--color-accent`, applies to Story/Events/RSVP now, and
+  silently to Gallery/Memories/Guestbook/FAQ whenever those return).
+- Header logo: `.site-logo` in `css/components.css`.
+- RSVP arrival field + stay note: `js/rsvp.js` (`#field-arrival`,
+  `#field-stay-note`, both inside the `yesOnlyGroups` collapse array),
+  `.rsvp-stay-note` styles in `components.css`, `Code.gs` for the sheet
+  column (not yet redeployed).
+- Event dates/names/timeOfDay: `js/content.js`'s `events` array;
+  rendering logic (including the mixed known-date/unknown-time branch)
+  in `renderEvents()`, `js/app.js`.
+- Event card illustrations (Thread A): `event.photo`/`photoAlt` in
+  `js/content.js`, `.event-card__illo` family in `components.css`,
+  transparent PNGs in `assets/images/`.
+- Mobile nav link states (Thread A): `.site-nav a`/`a:hover`/`a.is-active`
+  in `components.css`; focus-visible stays the global rule in `style.css`.
+- Story-photo parallax + the HTML-attribute bug: `initStoryParallax()` in
+  `js/animations.js`; the `<img>` template in `renderStory()`/`app.js`
+  (no longer carries `width`/`height` attributes — don't re-add them).
+- Bollywood/pop copy mockup (not implemented):
+  `https://claude.ai/code/artifact/603c0ac1-150d-4725-b0ad-959a4aee9b19`
+- Caching convention: `?v=N` on every CSS/JS tag in `index.html`, now at
+  `v=41` — bump every tag together on any CSS/JS change.
+- Dev server: `.claude/launch.json` → `wedding-static-server` (port 4173)
+  or `wedding-static-server-alt` (port 4174, fallback if 4173 is held by
+  a concurrent session).
 
-## Artifacts published this session (all private to the user's account)
+## Nothing has been pushed
 
-- Sealed coda mystery-motif mockup — confirmed and shipped:
-  `https://claude.ai/code/artifact/50fe53f2-2f52-469b-843a-b53549d94212`
-- Turning the Pages (original) + The Pressed Seal — Pressed Seal
-  **confirmed and shipped**, Turning the Pages **superseded** by the next
-  link below: `https://claude.ai/code/artifact/0323a40b-a0de-484c-90f9-a1c9cd66b1a6`
-- Full-Bleed Band / Drawn-in-Ink / Lit Paper — explored, **not adopted**:
-  `https://claude.ai/code/artifact/1e36f5d1-eb93-418f-8368-4cd74670b96e`
-- The Story Writes Itself (reimagined Turning the Pages) — explored,
-  **not built** (superseded by the Petal Blush port's own Story treatment):
-  `https://claude.ai/code/artifact/f918d9c9-bd0f-4e22-aed7-410899f64eca`
-- Pop/Hip/Traditional Indian swatch-and-type board — explored, **not
-  adopted**: `https://claude.ai/code/artifact/f6151dfe-f418-4f48-92cb-293c368e7281`
-- Pop Wedding full mockup and First Light full mockup — both built as
-  local files, **neither was ever published/shown** (interrupted when the
-  user pivoted to the Figma reference) — not linked since no live URL
-  exists for either.
+`git status`/`git log` confirm every change described above (both
+threads) is local and uncommitted — nothing from 2026-07-21 is on
+`origin/main` or the deployed GitHub Pages site yet. If the user reports
+seeing old behavior on the *live* site, that's expected, not a bug.

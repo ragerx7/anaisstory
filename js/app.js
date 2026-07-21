@@ -16,7 +16,7 @@ const App = (() => {
         (milestone, index) => `
         <article class="timeline-item" role="listitem" aria-label="${milestone.year}: ${milestone.title}">
           <div class="timeline-item__photo">
-            <img src="${milestone.photo}" alt="${milestone.photoAlt}" loading="lazy" width="480" height="360" />
+            <img src="${milestone.photo}" alt="${milestone.photoAlt}" loading="lazy" />
           </div>
           <div class="timeline-item__copy">
             <span class="timeline-item__year" aria-hidden="true">${milestone.year}</span>

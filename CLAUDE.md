@@ -369,6 +369,157 @@ reintroduce this class of bug). Verified post-fix at 375px:
 `.site-header` measures the correct 375px, hero photo/shadow/gradient
 render unclipped, desktop layout unaffected.
 
+**Mobile nav link state system (fixed 2026-07-21).** The hamburger overlay's
+links (`.site-nav a`) could show three visually unrelated looks
+simultaneously — an unstyled native focus-ring box on whichever link
+`openMenu()` auto-focuses (`Utils.trapFocus` + `firstLink.focus()`, a
+deliberate accessibility pattern), a plain color shift on the scroll-linked
+active-section link (`.is-active`, set by an `IntersectionObserver` in
+`setupActiveLinkObserver()`), and plain text everywhere else. Root cause:
+`.site-nav a:focus-visible` and `.site-nav a.is-active` both only changed
+`color`, so nothing owned the `outline` and the browser's native ring filled
+the gap — two unrelated states with no shared visual language. **Fix,
+deliberately scoped at the user's explicit request**: `.site-nav a` now gets
+a hover wash (`--color-blush` background + rose text) and `.is-active` gets
+rose text plus a small gold hairline underline via `::after` — but
+`:focus-visible` was **left untouched**, relying on the site's pre-existing
+global `:focus-visible` rule in `style.css` (`outline: 2px solid
+var(--color-accent); outline-offset: 3px;`) rather than adding a
+nav-specific override. If asked to revisit nav focus styling later, know
+that this was a deliberate scope decision, not an oversight — the global
+rule already existed and covers it.
+
+**Event card dress-code badge + illustration banners (2026-07-21).** Each
+event card (`renderEvents()` in `js/app.js`) now has two additions beyond
+the honest-`TBD` system described above:
+- A **themed illustration banner** at the top of the card
+  (`.event-card__illo`, `aspect-ratio: 16 / 9` matching the source
+  artwork's real 1920×1080 dimensions exactly, `object-fit: contain` so
+  nothing is ever cropped regardless of card width) — one hand-picked
+  illustration per event (henna hands for Mehendi, a couple in evening
+  wear for Sangeet, a Haldi ceremony scene, joined bangled hands for The
+  Wedding), transparent PNGs at `assets/images/{mehndi,sangeet,haldi,
+  wedding}-transparent.png`, referenced via each event's `photo`/
+  `photoAlt` fields in `content.js`. Each event gets its own gradient wash
+  behind the transparent artwork, hand-tuned to that illustration's palette
+  (rose/peach for Mehendi, lavender/peach for Sangeet, gold for Haldi,
+  rose→gold for the Wedding) via `event.id`-scoped modifier classes
+  (`.event-card__illo--mehendi` etc.) in `components.css`, plus a soft
+  radial `mask-image` on the `<img>` so the artwork's edges fade into the
+  wash instead of sitting as a hard rectangle. The banner replaces the old
+  top accent-bar gradient on cards that have one (`.event-card.has-illo
+  { overflow... }`/`::before { display: none }` — though in practice all
+  four real events always have a `photo` now, so the plain accent-bar path
+  is currently dormant, not deleted).
+- The dress-code badge now spells out its category — **"Dress code: TBA"**
+  (was a bare "To be announced") — so it's never ambiguous what the
+  pending value refers to, on both the TBD state (dashed/italic, shared
+  `.is-tbd` treatment) and the eventual confirmed state (e.g. "Dress code:
+  Festive Indian", solid pill). This whole feature went through several
+  design-lead rounds before landing — see TODO.md's Done list for the full
+  iteration history (a ghost-chip-only attempt was rejected twice for not
+  naming the category; the user then supplied their own externally-built
+  design comparison file and picked directly from it — see the gotcha
+  below).
+
+⚠️ **External pre-built design-comparison files are already-decided specs,
+not new design questions.** Twice this session the user supplied a `.dc.html`
+file (output of a design tool outside this session, structured as several
+side-by-side labeled options, e.g. "1a"/"1b"/"1c"/"1d") from a local
+`Downloads/` folder and said "let's use the design created here" or "let's
+implement 1b instead of 1d." Treat this the same way an already-approved
+mockup is treated: read the file directly (it's static HTML/CSS, safe to
+`Read`), implement the specific option named literally (exact copy, exact
+CSS values where given), and skip re-routing through design-lead — the
+design decision was already made outside this tool, by the user. Don't
+second-guess or re-interpret it as a fresh creative brief. Still applies:
+bump `?v=N`, still verify live in the browser afterward.
+
+⚠️ **Concurrent multi-session editing of this repo is a real, recurring
+condition — verify before assuming your last read is still current.**
+Multiple times this session, a file this conversation had already read
+(and expected to still reflect its own state) had visibly changed on disk
+between reads — e.g. `index.html`'s hero CTA already showing a different
+copy than what was read minutes earlier, `og:image` already pointing at a
+file this conversation hadn't yet been asked to change, `?v=N` jumping by
+more than this conversation's own edits account for, and a `git log` commit
+("event card illustrations") appearing that already contained this
+conversation's own in-progress edits. This means **another Claude Code
+session (or the user directly) is very likely editing this same repo in
+parallel** during any given session. Practical implications: re-`grep`/
+`Read` a file immediately before editing it rather than trusting an earlier
+read in the same conversation, especially after any pause; don't be
+surprised if a "TODO" this session was about to tackle turns out to already
+be done; and don't treat an unexpected file state as this conversation's own
+bug before checking whether it's simply newer than expected.
+
+**RSVP message field label fixed, third→first person (2026-07-21).** "Any
+message for the bride & groom?" → **"Any message for us?"** in
+`js/rsvp.js` — the rest of the site is consistently first-person ("join
+us," "Save us the honour," "we promise"), so this was the one outlier.
+
+**"Bollywood/pop" copy voice — spec'd and mocked up, not yet implemented
+(2026-07-21).** See TODO.md's "Blocked on user input" for the full status —
+a complete voice charter and old→new copy table exist (design-lead spec +
+Artifact mockup), covering hero/invitation/section headings/Our Story/
+events/RSVP success states/guestbook, but **nothing from it is live on the
+real site**. Don't assume any of this copy is wanted without an explicit
+go-ahead; the mockup-first workflow applies as normal here.
+
+⚠️ **A uniform `scale()` on a directional parallax crops the axis that
+didn't need it — fixed on the Story photos 2026-07-21, worth knowing if
+a similar scroll-parallax gets added elsewhere.** `initStoryParallax()`
+in `js/animations.js` overscales each Story timeline photo so a
+vertical scroll-linked slide (`yPercent` -6→6) never reveals the
+container's top/bottom edge. The overscale was `gsap.set(img, { scale:
+1.15 })` — uniform on both axes — which also zoomed in 15%
+*horizontally* for no functional reason, cropping into the sides of
+every photo and cutting off subjects framed near the left/right edges
+(caught via a user screenshot of "Meeting Each Other" showing the
+second person almost entirely cropped out). A *vertical* slide only
+ever needs *vertical* overscale headroom. Fixed to `{ scaleX: 1,
+scaleY: 1.15 }`. General lesson: when overscaling an image purely to
+give a scroll/hover animation room to move along one axis, scale only
+that axis — a uniform `scale` silently crops the other axis too, and
+because `object-fit: cover` already fits the image cleanly before the
+transform ever applies, that extra crop is pure loss with no purpose.
+
+⚠️ **The `scaleX`/`scaleY` fix above was NOT the real bug — it was a
+plausible-looking theory that turned out wrong, found only because the
+user pushed back with a fresh screenshot after the "fix" shipped and
+asked to actually verify rather than trust it.** The `scaleX: 1` change
+is real and worth keeping (it does remove one unnecessary source of
+crop), but the story photos kept cropping the right side after it
+shipped. Root-caused by direct measurement (`getComputedStyle`, isolated
+reproduction in a scratch element, then cloning the real DOM node to
+bisect which property caused it): the `<img>` tag in `js/app.js`'s
+`renderStory()` template had **HTML `width="480" height="360"`
+attributes** alongside the CSS rule `.timeline-item__photo img { width:
+100%; aspect-ratio: 4/3; object-fit: cover; }`. In this rendering
+engine, the literal HTML `height="360"` attribute value was winning as
+the used height instead of the CSS `aspect-ratio: 4/3` deriving height
+from the actual rendered width — so at a 327px-wide mobile column, the
+box came out 327×360 (a 0.91 ratio) instead of the correct 327×245
+(4:3), and `object-fit: cover` cropped ~32% of the image's width from
+the sides to fill that too-tall box. Confirmed by cloning the exact
+live DOM node into isolation: reproduced 360px there too; a fresh
+`<img>` with identical CSS but no HTML `width`/`height` attributes
+correctly computed 245px. **Fix**: removed the HTML `width`/`height`
+attributes from that `<img>` tag entirely — the explicit CSS
+`aspect-ratio: 4/3` is already sufficient to reserve layout space
+before the image loads (no layout-shift regression), so the HTML
+attributes were redundant even when they aren't actively conflicting.
+**General lesson for this codebase**: don't add HTML `width`/`height`
+attributes to an `<img>` that already has an explicit CSS
+`aspect-ratio` rule targeting it — even when the attribute ratio
+matches the CSS ratio exactly (480:360 and 4:3 are both 1.333), some
+engines resolve the two inconsistently. Pick one mechanism, not both;
+this codebase's convention is CSS `aspect-ratio`, not HTML attributes,
+wherever a CSS rule already exists for that image class. The hero image
+(`wedding-childhood-story-v5-transparent.webp`) *does* keep explicit
+HTML `width="832" height="1296"` — that one has no competing CSS
+`aspect-ratio` rule, so there's no conflict; leave it as-is.
+
 ## Design system — current direction: "Petal Blush" (romantic rose/gold)
 
 **Superseded the "scrapbook" rust-paper palette on 2026-07-19.** The user
